@@ -1,0 +1,11 @@
+{
+  "name": "nodechat",
+  "version": "0.0.1",
+  "description": "real time chat",
+  "dependencies": {
+    "socket.io": "latest",
+    "express": "latest",
+    "jade": "latest"
+  },
+  "author": "Patrick McCarthy"
+}

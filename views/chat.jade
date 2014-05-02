@@ -1,0 +1,12 @@
+extends layout
+
+block extraHeader
+  title Chat
+  script(src='/socket.io/socket.io.js')
+  script(src='/js/chat.js')
+
+block content
+  #content
+  .controls
+    input.field(id='chatfield')
+    input.send(id='sendbtn' type='button', value='send')
