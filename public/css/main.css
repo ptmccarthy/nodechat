@@ -6,6 +6,10 @@
   overflow-y: scroll;
 }
 
-.field {
+#name {
+  width: 350px;
+}
+
+#chatfield {
   width: 350px;
 }
