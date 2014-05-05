@@ -1,5 +1,6 @@
 window.onload = function() {
   var messages = [];
+  var chatfield;
   var socket = io.connect('http://localhost:8000');
   var field = document.getElementById('chatfield');
   var sendButton = document.getElementById('sendbtn');
@@ -17,7 +18,7 @@ window.onload = function() {
       content.innerHTML = html;
       content.scrollTop = content.scrollHeight;
     } else {
-      console.log('Error', data)
+      logger.error('Error', data)
     }
   });
 
@@ -26,13 +27,15 @@ window.onload = function() {
     if (username.value === '') {
       alert('You must enter a username');
     } else {
-      socket.emit('send', { message: text, username: username.value });
+      socket.emit('send', { message: text, username: username.value, timestamp: Date.now() });
       field.value = "";
     }
   }
 
   $(document).ready(function() {
-    $('#chatfield').keyup(function(e) {
+    chatfield = $('#chatfield').select();
+
+    chatfield.keyup(function(e) {
       if (e.keyCode === 13) {
         sendButton.click();
       }

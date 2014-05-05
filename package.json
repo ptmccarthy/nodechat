@@ -1,10 +1,17 @@
 {
   "name": "nodechat",
+  "main": "server.js",
   "version": "0.0.1",
   "description": "real time chat",
   "dependencies": {
     "socket.io": "latest",
     "express": "latest",
+    "mongodb": "latest",
+    "monk": "latest",
+    "passport": "latest",
+    "passport-local": "latest",
+    "bcrypt-nodejs": "latest",
+    "moment": "latest",
     "jade": "latest"
   },
   "author": "Patrick McCarthy"
