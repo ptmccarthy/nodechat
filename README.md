@@ -4,12 +4,14 @@ Lessons learned here will be applied to future projects...
 
 Installation instructions:
 
-1. clone repository
+1. install mongodb, e.g. on OS X using Homebrew `brew install mongodb`
 
-2. `cd [repository]`
+2. clone repository to local machine
 
-3. `npm install`
+3. `cd [repository]`
 
-4. `mongod --dbpath [repository]/data/db`
+4. `npm install`
 
-5. `node server.js`
+5. `mongod --dbpath [repository]/data/db`
+
+6. `node server.js`
