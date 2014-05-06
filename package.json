@@ -12,7 +12,8 @@
     "passport-local": "latest",
     "bcrypt-nodejs": "latest",
     "moment": "latest",
-    "jade": "latest"
+    "jade": "latest",
+    "passport.socketio": "~3.0.1"
   },
   "author": "Patrick McCarthy"
 }
