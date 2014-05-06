@@ -1,5 +1,5 @@
 var messages = [];
-var socket = io.connect('http://localhost:8000');
+var socket = io.connect('localhost:8000');
 var chatfield;
 var sendButton;
 var chatbox;
@@ -13,7 +13,9 @@ var displayMessage = function (data) {
     html += (data.username ? data.username : 'Server') + ': </b>';
     html += data.message + '<br />';
     chatbox.append(html);
-    chatbox.scrollTop = chatbox.scrollHeight;
+    chatbox.animate({
+      scrollTop: chatbox[0].scrollHeight
+    }, 300);
   } else {
     console.log('Error', data)
   } 
@@ -44,7 +46,7 @@ $(document).ready(function () {
       alert('You must enter a username');
     } else {
       socket.emit('send', { message: text, username: user, timestamp: moment() });
-      chatfield.val('');// = '';
+      chatfield.val('');
     }
   });
 
