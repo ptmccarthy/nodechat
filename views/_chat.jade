@@ -1,8 +1,10 @@
 block content
-  #content
-  .controls
-    | Name:
-    input#username
-    br
-    input#chatfield()
-    input#sendbtn(type='button', value='send')
+  .chat_module
+    .module_title Player Chat
+    .controls
+      | Name: 
+      input#username
+    #chatbox
+    .controls
+      input#chatfield()
+      input#sendbtn(type='button', value='send')

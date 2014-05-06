@@ -2,7 +2,7 @@ var messages = [];
 var socket = io.connect('http://localhost:8000');
 var chatfield;
 var sendButton;
-var content;
+var chatbox;
 var username;
 
 var displayMessage = function (data) {
@@ -12,8 +12,8 @@ var displayMessage = function (data) {
     html += '<b>[' + moment(data.timestamp).format('h:mm a') + '] ';
     html += (data.username ? data.username : 'Server') + ': </b>';
     html += data.message + '<br />';
-    content.append(html);
-    content.scrollTop = content.scrollHeight;
+    chatbox.append(html);
+    chatbox.scrollTop = chatbox.scrollHeight;
   } else {
     console.log('Error', data)
   } 
@@ -22,7 +22,7 @@ var displayMessage = function (data) {
 $(document).ready(function () {
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
-  content = $('#content').select();
+  chatbox = $('#chatbox').select();
   username = $('#username').select();
 
   socket.on('message', function (data) {

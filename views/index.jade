@@ -1,11 +1,15 @@
 extends layout
 
 block extraHeader
-  title DD App
+  title D&D Platform
   script(src='/socket.io/socket.io.js')
   script(src='/lib/jquery-2.1.1.min.js')
   script(src='/lib/moment.min.js')
   script(src='/js/chat.js')
+
+block banner
+  .banner
+    | D&D Platform
 
 block content
   include _chat.jade
