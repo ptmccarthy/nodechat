@@ -1,16 +1,11 @@
 extends layout
 
 block extraHeader
-  title Chat
+  title DD App
   script(src='/socket.io/socket.io.js')
   script(src='/lib/jquery-2.1.1.min.js')
+  script(src='/lib/moment.min.js')
   script(src='/js/chat.js')
 
 block content
-  #content
-  .controls
-    | Name:
-    input#username
-    br
-    input#chatfield()
-    input#sendbtn(type='button', value='send')
+  include _chat.jade
