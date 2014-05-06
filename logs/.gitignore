@@ -1,0 +1,3 @@
+# this is a hack to force an empty 'logs' directory to exist before first run
+
+*.log
