@@ -46,7 +46,6 @@ logger.info('server started at ' + moment().format('YYYY-MM-DD HH:MM:SS'));
 logger.info('logger set to level: ' + logger.level);
 logger.info('application listening on port ' + config.port);
 
-
 var sendRecentHistory = function (socket) {
   chats.find({}, {limit: config.displayRecent, sort: {'timestamp': -1}}, function (err, doc){
     // work backwards to send recent history in chronological order

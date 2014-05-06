@@ -1,5 +1,5 @@
 var messages = [];
-var socket = io.connect('localhost:8000');
+var socket = io.connect('http://localhost:8000');
 var chatfield;
 var sendButton;
 var chatbox;
