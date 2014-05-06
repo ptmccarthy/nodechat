@@ -16,9 +16,7 @@ var displayMessage = function (data) {
     chatbox.animate({
       scrollTop: chatbox[0].scrollHeight
     }, 300);
-  } else {
-    console.log('Error', data)
-  } 
+  }
 }
 
 $(document).ready(function () {

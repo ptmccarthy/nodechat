@@ -1,4 +1,5 @@
 var config = require('./config/config_server');
+var logger = require('./logger');
 
 // external libraries
 var express = require('express');
@@ -10,13 +11,13 @@ var routes = require('./routes');
 var sockets = require('./sockets');
 
 var app = express();
-var logger;
 
-io = io.listen(app.listen(config.port));
+// set socket.io properties
+io = io.listen(app.listen(config.port), {
+  // configure s.io to use winston for logging
+  'logger': logger,
+});
 
-// use socket.io's logger because its nice
-io.set('log level', config.logLevel);
-logger = io.log;
 
 // set express properties
 app.set('views', __dirname + '/views');
@@ -32,5 +33,6 @@ sockets.init(io);
 
 // server started, display info
 logger.info('server started at ' + moment().format('YYYY-MM-DD HH:MM:SS'));
-logger.info('logger set to level: ' + logger.level);
+logger.info('logging to console at level: ' + config.consoleLogLevel);
+logger.info('logging to ' + config.logFile + ' at level: ' + config.fileLogLevel);
 logger.info('application listening on port ' + config.port);

@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "description": "real time chat",
   "dependencies": {
+    "winston": "latest",
     "socket.io": "latest",
     "express": "latest",
     "mongodb": "latest",
