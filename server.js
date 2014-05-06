@@ -23,12 +23,23 @@ app.get('/', function (request, response) {
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('message', { message: 'Connected to chat.', humanTime: moment().format('h:mm a') });
+  socket.emit('message', { message: 'Connected to chat. Displaying 10 most recent messages...', humanTime: moment().format('h:mm a') });
+  sendRecentHistory(socket);
+
   socket.on('send', function (data) {
-    data.humanTime = (moment.unix(data.timestamp).format('h:mm a'));
+    data.humanTime = (moment(data.timestamp).format('h:mm a'));
     chats.insert(data);
     io.sockets.emit('message', data);
   });
 });
+
+var sendRecentHistory = function(socket) {
+  chats.find({}, {limit: 10, sort: {'timestamp': -1}}, function(err, doc){
+    // work backwards to send recent history in chronological order
+    for (var i = 1; i <= doc.length; i++) {
+      socket.emit('message', doc[doc.length-i]);
+    }
+  });
+}
 
 logger.info('listening on port 8000');
