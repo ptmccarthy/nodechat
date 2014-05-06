@@ -23,9 +23,10 @@ app.get('/', function (request, response) {
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('message', { message: 'welcome to the chat'});
+  socket.emit('message', { message: 'Connected to chat.', humanTime: moment().format('h:mm a') });
   socket.on('send', function (data) {
     chats.insert(data);
+    logger.info(moment.unix(data.timestamp).format('h:mm a'));
     io.sockets.emit('message', data);
   });
 });
