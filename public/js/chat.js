@@ -1,5 +1,5 @@
 var messages = [];
-var socket = io.connect('http://localhost:8000');
+var socket
 var chatfield;
 var sendButton;
 var chatbox;
@@ -22,6 +22,8 @@ var displayMessage = function (data) {
 }
 
 $(document).ready(function () {
+  socket = io.connect(document.URL);
+
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
   chatbox = $('#chatbox').select();
