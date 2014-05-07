@@ -1,7 +1,12 @@
-var config = require('./config/config_server')
+var config = require('./config/config_server');
+var fs = require('fs');
 
 // external libraries
 var winston = require('winston');
+
+if (!fs.existsSync('./logs')) { 
+  fs.mkdirSync('./logs')
+}
 
 var logger = new (winston.Logger)({
   transports: [
