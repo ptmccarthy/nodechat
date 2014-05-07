@@ -4,7 +4,9 @@ var fs = require('fs');
 // external libraries
 var winston = require('winston');
 
-fs.mkdirSync('./logs');
+if (!fs.existsSync('./logs')) { 
+  fs.mkdirSync('./logs')
+}
 
 var logger = new (winston.Logger)({
   transports: [
