@@ -5,6 +5,7 @@ var logger = require('./logger');
 var express = require('express');
 var moment = require('moment');
 var io = require('socket.io');
+var bodyParser = require('body-parser');
 
 // our helpers
 var routes = require('./routes');
@@ -24,9 +25,14 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.engine('jade', require('jade').__express);
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser());
 
 // express routes
 app.get('/', routes.index);
+app.get('/signup', routes.signup);
+app.get('/users', routes.users);
+
+app.post('/signup', routes.newUser);
 
 // initialize all of our socket listeners
 sockets.init(io);
