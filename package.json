@@ -15,7 +15,9 @@
     "moment": "latest",
     "jade": "latest",
     "passport.socketio": "~3.0.1",
-    "body-parser": "~1.2.0"
+    "body-parser": "~1.2.0",
+    "cookie-parser": "~1.1.0",
+    "express-session": "~1.2.0"
   },
   "author": "Patrick McCarthy"
 }

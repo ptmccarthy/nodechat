@@ -3,52 +3,61 @@ var config = require('./config/config_server');
 var monk = require('monk');
 var db = monk(config.mongoURL);
 
-var auth = require('./auth');
 var users = db.get('users');
 
-module.exports.index = function(req, res) {
-  res.render('index');
-}
-
-// Temporary signup route. Once we have session-based auth
-// we will use that to selectively show the signup content
-// instead of the content for the selected route
-module.exports.signup = function(req, res) {
-  res.render('signup');
-}
-
-// POST sign up route
-module.exports.newUser = function(req, res) {
-  userExists(req.body.username,
-                 function() { res.status(406).render('signup'); },
-                 function() {
-                   console.log("New user " + req.body.username);
-                   users.insert({username: req.body.username, password: req.body.password});
-                   //res.render('login');
-                 }
-            );
-}
-
-// display current users. Currently very ugly.
-module.exports.users = function(req, res) {
-  users.find({}, {}, function(err, doc) {
-    if(err) res.status(400).send('error');
-    else {
-      res.send(doc);
-    }
+module.exports = function(app, passport) {
+  app.get('/', isLoggedIn, function(req, res) {
+    res.render('index');
   });
-}
 
-// Temporary login route
-module.exports.login = function(req, res) {
-  res.render('login');
-}
+  app.get('/signup', function(req, res) {
+    res.render('signup');
+  });
 
-function userExists(username, onExists, onNotExists) {
+  // display current users. Currently very ugly.
+  app.get('/users', isLoggedIn, function(req, res) {
+    users.find({}, {}, function(err, doc) {
+      if(err) {
+        res.status(400).send('error');
+        console.log("The Doc: " + doc);
+      } else {
+        res.send(doc);
+      }
+    });
+  });
+
+  app.get('/logout', function(req, res) {
+    req.logout();
+    res.redirect('/login');
+  });
+
+  app.get('/login', function(req, res) {
+    res.render('login');
+  });
+
+  app.post('/login', passport.authenticate('local-login',
+                                           { successRedirect: '/users',
+                                             failureRedirect: '/login'}));
+
+  // sign up route
+  app.post('/signup', passport.authenticate('local-signup',
+                                            { successRedirect: '/login',
+                                              failureRedirect: '/signup'}));
+};
+
+var userExists = function(username, onExists, onNotExists) {
   users.find({username: username}, function(err, doc) {
     if (doc.length == 0)
       onNotExists();
     else
       onExists();
   });
+}
+
+var isLoggedIn = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
 }
