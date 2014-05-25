@@ -5,10 +5,10 @@ var logger = require('./logger');
 var express = require('express');
 var moment = require('moment');
 var io = require('socket.io');
-
-// our helpers
-var routes = require('./routes');
-var sockets = require('./sockets');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+var passport = require('passport');
 
 var app = express();
 
@@ -18,18 +18,21 @@ io = io.listen(app.listen(config.port), {
   'logger': logger,
 });
 
-
 // set express properties
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.engine('jade', require('jade').__express);
 app.use(express.static(__dirname + '/public'));
+app.use(bodyParser());
+app.use(cookieParser());
+app.use(session({secret: config.sessionSecret, key: config.sessionKey}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// express routes
-app.get('/', routes.index);
-
-// initialize all of our socket listeners
-sockets.init(io);
+// our helpers
+require('./config/passport')(passport);
+var routes = require('./routes')(app, passport);
+var sockets = require('./sockets')(io, passport);
 
 // server started, display info
 logger.info('server started at ' + moment().format('YYYY-MM-DD HH:MM:SS'));

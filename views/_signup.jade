@@ -1,0 +1,10 @@
+block content
+  .controls
+    form(action='/signup', method='post')
+      | Username: 
+      input#username(name='username', type='text')
+      br
+      | Password: 
+      input#password(name='password', type='password')
+      br
+      input#sendbtn(type='submit', value='submit')

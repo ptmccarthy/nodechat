@@ -14,5 +14,9 @@ config.maxLogFileSize = 4194304 // bytes
 // application settings
 config.displayRecent = 10;
 
+// connect sessions configuration
+config.sessionSecret = 'D&DSessionSecret';
+config.sessionKey = 'D&DSessionKey';
+
 // export config
 module.exports = config;

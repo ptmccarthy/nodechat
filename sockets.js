@@ -6,7 +6,7 @@ var io;
 
 var chats = db.get('history');
 
-module.exports.init = function(sio) {
+module.exports = function(sio, passport) {
   io = sio;
   io.sockets.on('connection', onConnect);
 }
