@@ -33,6 +33,19 @@ var socketManager = {
         socketsArr.splice(i, 1);
       }
     }
+  },
+
+  activeUsers: function() {
+    var keys = Object.keys(this);
+    var users = [];
+    for (var index in  keys) {
+      if (keys[index].substring(0, 5) === 'user-') {
+        if (this[keys[index]].length > 0) {
+          users.push(keys[index].substring(5));
+        }
+      }
+    }
+    return users;
   }
 };
 
@@ -56,12 +69,17 @@ var onConnect = function (socket) {
     timestap: moment()
   });
 
+  io.sockets.emit('active-users', {
+    users: socketManager.activeUsers()
+  });
+
   sendRecentHistory(socket);
   initializeListeners(socket);
 
   socket.on('disconnect', function() {
     socketManager.unregister(socket);
     logger.info('Socket disconnected. ID: ' + socket.id);
+    io.sockets.emit('active-users', { users: socketManager.activeUsers() });
   });
 }
 

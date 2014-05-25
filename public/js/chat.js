@@ -1,8 +1,10 @@
 var messages = [];
+var users = [];
 var socket;
 var chatfield;
 var sendButton;
 var chatbox;
+var buddyList;
 
 var displayMessage = function (data) {
    if (data.message) {
@@ -18,15 +20,33 @@ var displayMessage = function (data) {
   }
 }
 
+var updateBuddyList = function(data) {
+  if (data.users) {
+    users = data.users;
+  }
+  var html = '';
+  for (var i = 0; i < users.length; i++) {
+    html += users[i];
+    html += '<br />';
+  }
+  buddyList.html(html);
+}
+
 $(document).ready(function () {
   socket = io.connect(document.URL);
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
   chatbox = $('#chatbox').select();
+  buddyList = $('#buddylist').select();
+  buddyList.html("abcd<br>defgh<br>");
 
   socket.on('message', function (data) {
     displayMessage(data);
+  });
+
+  socket.on('active-users', function(data) {
+    updateBuddyList(data);
   });
 
   socket.on('disconnect', function () {
