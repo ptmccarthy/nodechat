@@ -1,5 +1,5 @@
 var messages = [];
-var socket
+var socket;
 var chatfield;
 var sendButton;
 var chatbox;
