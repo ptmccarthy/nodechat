@@ -9,6 +9,7 @@ var moment = require('moment');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var flash = require('connect-flash');
 
 // session store
 var session = require('express-session');
@@ -36,6 +37,7 @@ app.use(session({
   key: config.sessionKey,
   store: sessionStore
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 

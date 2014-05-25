@@ -18,7 +18,8 @@
     "body-parser": "~1.2.0",
     "cookie-parser": "~1.1.0",
     "express-session": "~1.2.0",
-    "connect-mongo": "~0.4.1"
+    "connect-mongo": "~0.4.1",
+    "connect-flash": "~0.1.1"
   },
   "contributors": [{
       "name": "Patrick McCarthy" },
