@@ -11,6 +11,10 @@ var displayMessage = function (data) {
     messages.push(data);
     var html = '';
     html += '<b>[' + moment(data.timestamp).format('h:mm a') + '] ';
+    console.log(data.recipients);
+    if (data.recipients != 'all') {
+      html += '[Private Message] ';
+    }
     html += (data.username ? data.username : 'Server') + ': </b>';
     html += data.message + '<br />';
     chatbox.append(html);
@@ -26,8 +30,11 @@ var updateBuddyList = function(data) {
   }
   var html = '';
   for (var i = 0; i < users.length; i++) {
+    var spanId = '#user-' + users[i];
+    html += '<span class="buddyItems" id="' + spanId + '">';
+    html += '<input type="checkbox">';
     html += users[i];
-    html += '<br />';
+    html += '</span>';
   }
   buddyList.html(html);
 }
@@ -40,7 +47,6 @@ $(document).ready(function () {
   sendButton = $('#sendbtn').select();
   chatbox = $('#chatbox').select();
   buddyList = $('#buddylist').select();
-  buddyList.html("abcd<br>defgh<br>");
 
   socket.on('message', function (data) {
     displayMessage(data);
@@ -60,7 +66,22 @@ $(document).ready(function () {
 
   sendButton.click(function () {
     var text = chatfield.val();
-    socket.emit('send', { message: text, username: username, timestamp: moment() });
+    var recipients = [];
+    buddyList.children().each(function(index, element) {
+      var recip = $(element).text();
+      if ( $(element).find("input").is(':checked') ) {
+        recipients.push(recip);
+      }
+    });
+
+    var response = {
+      message: text,
+      username: username,
+      recipients: recipients,
+      timestamp: moment()
+    };
+
+    socket.emit('chat-send', response);
     chatfield.val('');
   });
 

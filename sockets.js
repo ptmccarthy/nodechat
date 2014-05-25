@@ -41,16 +41,38 @@ var onConnect = function (socket) {
 
   socket.on('disconnect', function() {
     socketManager.unregister(socket);
-    console.log(socketManager.typeToId);
     logger.info('Socket disconnected. ID: ' + socket.id);
     io.sockets.emit('active-users', { users: socketManager.activeUsers() });
   });
 }
 
 var initializeListeners = function (socket) {
-  socket.on('send', function (data) {
-    chats.insert(data);
-    io.sockets.emit('message', data);
+  socket.on('chat-send', function (data) {
+    var targetSockets = [];
+    var type = 'chat';
+    if (data.recipients == undefined) {
+      console.log("recipients is undefined");
+      data.recipients = 'all';
+      targetSockets = socketManager.getSocketsOfType(type);
+    } else if (data.recipients.length == 0) {
+      console.log("recipients is empty");
+      data.recipients = 'all';
+      targetSockets = socketManager.getSocketsOfType(type);
+    } else {
+      // get sockets for the recipients
+      for (var i = 0; i < data.recipients.length; i++) {
+        console.log(data.recipients[i]);
+        targetSockets = targetSockets.concat(socketManager.getSocketsOfTypeForUser(type, data.recipients[i]));
+      }
+      // get sockets for the sender
+      targetSockets = targetSockets.concat(socketManager.getSocketsOfTypeForUser(type, data.username));
+    }
+    for (var i = 0; i < targetSockets.length; i++) {
+      var socket = targetSockets[i];
+      logger.info("emitting message of type `" + type + "` to socket " + socket.id);
+      socket.emit('message', data);
+    }
+        chats.insert(data);
   });
 
   socket.on('set-type', function(data) {

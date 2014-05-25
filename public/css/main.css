@@ -2,6 +2,10 @@ body {
   font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
+span.buddyItems {
+  display: table-row;
+}
+
 .banner {
   font-size: 2em;
   height: 1.5em;
