@@ -15,7 +15,7 @@ module.exports = function(app, passport) {
     users.find({}, {}, function(err, doc) {
       if(err) {
         res.status(400).send('error');
-        console.log("The Doc: " + doc);
+        logger.error("Error finding users. The doc is: " + doc);
       } else {
         res.send(doc);
       }
