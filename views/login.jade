@@ -5,9 +5,11 @@ block extraHeader
   script(src='/lib/jquery-2.1.1.min.js')
   script(src='/js/login.js')
 
-block banner
-  .banner
-    | D&D Platform
-
 block content
+  .module_title
+    | Log In
   include _login.jade
+  .module_title
+    | Signup
+  include _signup.jade
+
