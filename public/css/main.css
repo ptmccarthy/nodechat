@@ -3,6 +3,10 @@ body {
   font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
+span.buddyItems {
+  display: table-row;
+}
+
 .banner {
   font-size: 2em;
   height: 1.5em;
@@ -60,17 +64,45 @@ input#sendbtn {
 }
 
 #chatbox {
-  width: 36em;
+  width: 34em;
   height: 15em;
   padding: 0.4em;
+  margin: 0.5em;
   border: solid 1px #999;
   font-size: 1em;
   overflow-y: scroll;
+  display: inline-block;
+}
+
+#buddylist {
+  width: 10em;
+  height: 15em;
+  padding: 0.4em;
+  border: solid 1px #999;
+  margin: 0.5em;
+  font-size: 1em;
+  overflow-y: scroll;
+  display: inline-block;
+}
+
+.buddylist-title {
+  width: 12em;
+  height: 1.2em;
+  text-align: center;
+  display: inline-block;
+  position: relative;
+  float: right;
 }
 
 #username {
   width: 20em;
   height: 1.2em;
+}
+
+.user_name {
+  width: 20em;
+  height: 1.2em;
+  display: inline-block;
 }
 
 #chatfield {
