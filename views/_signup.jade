@@ -1,10 +1,11 @@
 block content
-  .controls
-    form(action='/signup', method='post')
-      | Username: 
+  .login_element
+    .module_title Sign up
+    form.login(action='/signup', method='post')
+      .login_text Username: 
       input#username(name='username', type='text')
       br
-      | Password: 
+      .login_text Password: 
       input#password(name='password', type='password')
       br
-      input#sendbtn(type='submit', value='submit')
+      input#sendbtn(type='submit', value='Submit')
