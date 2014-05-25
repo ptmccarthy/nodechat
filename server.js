@@ -4,13 +4,18 @@ var logger = require('./logger');
 // external libraries
 var express = require('express');
 var moment = require('moment');
-var io = require('socket.io');
+
+// express middleware
+var passport = require('passport');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+
+// session store
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
-var passport = require('passport');
+var sessionStore = new MongoStore({ db: config.databaseName });
 
+var io = require('socket.io');
 var app = express();
 
 // set socket.io properties
@@ -29,15 +34,15 @@ app.use(cookieParser());
 app.use(session({
   secret: config.sessionSecret,
   key: config.sessionKey,
-  store: new MongoStore({ db: config.databaseName })
+  store: sessionStore
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // our helpers
-require('./config/passport')(passport);
+var passportConfig = require('./config/passport')(passport);
 var routes = require('./routes')(app, passport);
-var sockets = require('./sockets')(io, passport);
+var sockets = require('./sockets')(io, passport, sessionStore);
 
 // server started, display info
 logger.info('server started at ' + moment().format('YYYY-MM-DD HH:MM:SS'));
