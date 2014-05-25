@@ -7,7 +7,7 @@ var users = db.get('users');
 
 module.exports = function(app, passport) {
   app.get('/', isLoggedIn, function(req, res) {
-    res.render('index');
+    res.render('index', { 'username': req.user.username });
   });
 
   app.get('/signup', function(req, res) {
