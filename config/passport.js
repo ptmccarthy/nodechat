@@ -27,10 +27,12 @@ module.exports = function(passport, app) {
           var message = "Login failed: User " + username + " not found";
           logger.info(message);
           return done(null, false, { message: message });
+
         } else if (!users.passwordIsValid(password, user.password)) {
           var message = "Login failed: Incorrect password for user " + username;
           logger.info(message);
           return done(null, false, { message: message });
+          
         } else {
           return done(null, user);
         }

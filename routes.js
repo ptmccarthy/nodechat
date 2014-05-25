@@ -1,5 +1,6 @@
 var config = require('./config/config_server');
 
+var flash = require('connect-flash');
 var monk = require('monk');
 var db = monk(config.mongoURL);
 
@@ -28,17 +29,21 @@ module.exports = function(app, passport) {
   });
 
   app.get('/login', function(req, res) {
-    res.render('login');
+    res.render('login', { message: req.flash('error')} );
   });
 
   app.post('/login', passport.authenticate('local-login',
                                            { successRedirect: '/',
-                                             failureRedirect: '/login'}));
+                                             failureRedirect: '/login',
+                                             failureFlash: true })
+  );
 
   // sign up route
   app.post('/signup', passport.authenticate('local-signup',
                                             { successRedirect: '/login',
-                                              failureRedirect: '/signup'}));
+                                              failureRedirect: '/signup',
+                                              failureFlash: true })
+  );
 };
 
 var isLoggedIn = function(req, res, next) {
