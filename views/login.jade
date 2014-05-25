@@ -4,9 +4,11 @@ block extraHeader
   title D&D Platform - Login
   script(src='/lib/jquery-2.1.1.min.js')
 
-block banner
-  .banner
-    | D&D Platform -- Login
-
 block content
-  include _login.jade
+  .module_title
+    | Log In
+  include _login
+  .module_title
+    | Signup
+  include _signup
+
