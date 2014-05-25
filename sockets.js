@@ -43,6 +43,10 @@ var onConnect = function (socket) {
 
   sendRecentHistory(socket);
   initializeListeners(socket);
+
+  socket.on('disconnect', function() {
+    logger.info('Socket disconnected. ID: ' + socket.id);
+  });
 }
 
 var initializeListeners = function (socket) {
