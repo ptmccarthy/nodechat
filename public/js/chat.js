@@ -34,6 +34,7 @@ var updateBuddyList = function(data) {
 
 $(document).ready(function () {
   socket = io.connect(document.URL);
+  socket.emit('set-type', {type: 'chat'});
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();

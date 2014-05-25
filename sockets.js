@@ -8,46 +8,9 @@ var passportio = require('passport.socketio');
 
 var db = monk(config.mongoURL);
 var chats = db.get('history');
+var socketManager = require('./socketManager');
 
 var io;
-
-var socketManager = {
-  register: function(socket) {
-    var socketUser = socket.manager.handshaken[socket.id].user;
-    // use this label with appended 'user-' so that we don't
-    // have collisions with users and method names
-    var userLabel = 'user-' + socketUser.username;
-    if (!this[userLabel]) {
-      this['user-' + socketUser.username] = [socket];
-    } else {
-      this[userLabel].push(socket);
-    }
-  },
-
-  unregister: function(socket) {
-    var socketUser = socket.manager.handshaken[socket.id].user;
-    var userLabel = 'user-' + socketUser.username;
-    var socketsArr = this[userLabel];
-    for (var i = 0; i < socketsArr.length; i++) {
-      if (socketsArr[i].id === socket.id) {
-        socketsArr.splice(i, 1);
-      }
-    }
-  },
-
-  activeUsers: function() {
-    var keys = Object.keys(this);
-    var users = [];
-    for (var index in  keys) {
-      if (keys[index].substring(0, 5) === 'user-') {
-        if (this[keys[index]].length > 0) {
-          users.push(keys[index].substring(5));
-        }
-      }
-    }
-    return users;
-  }
-};
 
 module.exports = function(sio, passport, sessionStore) {
   io = sio;
@@ -78,6 +41,7 @@ var onConnect = function (socket) {
 
   socket.on('disconnect', function() {
     socketManager.unregister(socket);
+    console.log(socketManager.typeToId);
     logger.info('Socket disconnected. ID: ' + socket.id);
     io.sockets.emit('active-users', { users: socketManager.activeUsers() });
   });
@@ -87,6 +51,10 @@ var initializeListeners = function (socket) {
   socket.on('send', function (data) {
     chats.insert(data);
     io.sockets.emit('message', data);
+  });
+
+  socket.on('set-type', function(data) {
+    socketManager.registerAsType(socket, data.type);
   });
 }
 
