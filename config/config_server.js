@@ -2,7 +2,8 @@ var config = {}
 
 // general settings
 config.port = '8000';
-config.mongoURL = 'localhost:27017/chat_db';
+config.databaseName = 'chat-db';
+config.mongoURL = 'localhost:27017/' + config.databaseName;
 
 // logging settings
 // for lvels use standard syslog severity levels

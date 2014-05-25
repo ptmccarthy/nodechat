@@ -8,6 +8,7 @@ var io = require('socket.io');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 
 var app = express();
@@ -25,7 +26,11 @@ app.engine('jade', require('jade').__express);
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser());
 app.use(cookieParser());
-app.use(session({secret: config.sessionSecret, key: config.sessionKey}));
+app.use(session({
+  secret: config.sessionSecret,
+  key: config.sessionKey,
+  store: new MongoStore({ db: config.databaseName })
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
