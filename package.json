@@ -19,5 +19,8 @@
     "cookie-parser": "~1.1.0",
     "express-session": "~1.2.0"
   },
-  "author": "Patrick McCarthy"
+  "contributors": [{
+      "name": "Patrick McCarthy" },
+    {
+      "name": "Jacob Reynolds"  }]
 }

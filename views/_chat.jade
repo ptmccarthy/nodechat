@@ -2,9 +2,12 @@ block content
   .chat_module
     .module_title Player Chat
     .controls
-      | Name: 
-      input#username
+      div.user_name Name: #{username}
     #chatbox
     .controls
       input#chatfield()
       input#sendbtn(type='button', value='send')
+
+script.
+  var username = "#{username}";
+

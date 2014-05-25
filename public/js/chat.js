@@ -3,7 +3,6 @@ var socket
 var chatfield;
 var sendButton;
 var chatbox;
-var username;
 
 var displayMessage = function (data) {
    if (data.message) {
@@ -25,7 +24,6 @@ $(document).ready(function () {
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
   chatbox = $('#chatbox').select();
-  username = $('#username').select();
 
   socket.on('message', function (data) {
     displayMessage(data);
@@ -41,13 +39,8 @@ $(document).ready(function () {
 
   sendButton.click(function () {
     var text = chatfield.val();
-    var user = username.val();
-    if (user === '') {
-      alert('You must enter a username');
-    } else {
-      socket.emit('send', { message: text, username: user, timestamp: moment() });
-      chatfield.val('');
-    }
+    socket.emit('send', { message: text, username: username, timestamp: moment() });
+    chatfield.val('');
   });
 
   chatfield.keyup(function (e) {
