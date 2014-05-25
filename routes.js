@@ -10,10 +10,6 @@ module.exports = function(app, passport) {
     res.render('index');
   });
 
-  app.get('/signup', function(req, res) {
-    res.render('signup');
-  });
-
   // display current users. Currently very ugly.
   app.get('/users', isLoggedIn, function(req, res) {
     users.find({}, {}, function(err, doc) {
