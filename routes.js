@@ -36,7 +36,7 @@ module.exports = function(app, passport) {
   });
 
   app.post('/login', passport.authenticate('local-login',
-                                           { successRedirect: '/users',
+                                           { successRedirect: '/',
                                              failureRedirect: '/login'}));
 
   // sign up route
