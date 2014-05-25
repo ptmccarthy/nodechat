@@ -10,26 +10,21 @@ module.exports = {
   find: function(username, callback) {
     users.findOne({username: username}, function(err, doc) {
       if (err) throw err;
-      if (doc.length == 0)
+      else if (!doc)
         callback(null);
       else
         callback(doc);
     });
   },
 
-  create: function(username, password, success) {
-    this.userExists(username, function(successVal) {
-      if (!successVal) {
-        success(false);
+  create: function(username, password, callback) {
+    this.userExists(username, function(exists) {
+      if (exists) {
+        // already exists, we can't create that user
+        callback(null, null);
       } else {
-        users.insert({username: username, password: generateHash(password) },
-                     function(err, records) {
-                       if (err) {
-                         throw err;
-                       } else {
-                         success(true);
-                       }
-                     });
+        users.insert({username: username, password: generateHash(password) })
+             .on('complete', function(err, doc) { callback(err, doc); });
       }
     });
   },
@@ -46,11 +41,12 @@ module.exports = {
 
   userExists: function(username, exists) {
     users.find({username: username}, function(err, doc) {
+      console.log(doc);
       if (err) throw err;
       if (doc.length == 0)
-        exists(true);
-      else
         exists(false);
+      else
+        exists(true);
     });
   },
 

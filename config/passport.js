@@ -1,6 +1,7 @@
 var config = require('./config_server');
 var monk = require('monk');
 var db = monk(config.mongoURL);
+var logger = require('../logger');
 
 var LocalStrategy = require('passport-local').Strategy;
 
@@ -23,9 +24,13 @@ module.exports = function(passport, app) {
     process.nextTick(function() {
       users.find(username, function(user) {
         if (!user) {
-          return done(null, false, { message: "Incorrect username" });
+          var message = "Login failed: User " + username + " not found";
+          logger.info(message);
+          return done(null, false, { message: message });
         } else if (!users.passwordIsValid(password, user.password)) {
-          return done(null, false, { message: "Incorrect password" });
+          var message = "Login failed: Incorrect password for user " + username;
+          logger.info(message);
+          return done(null, false, { message: message });
         } else {
           return done(null, user);
         }
@@ -36,8 +41,14 @@ module.exports = function(passport, app) {
   passport.use('local-signup', new LocalStrategy(
     function(username, password, done) {
     process.nextTick(function() {
-      users.create(username, password, function(success) {
-        return done();
+      users.create(username, password, function(err, user) {
+        if (err) throw err;
+        if (!user) {
+          var message = 'Signup Failed: User ' + username + ' already exists';
+          logger.info(message);
+          return done(null, false, { message: message });
+        }
+        return done(null, user);
       });
     });
     })
