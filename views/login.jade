@@ -10,4 +10,9 @@ block content
   include _signup
 
   script.
-    alertify.error("#{message}");
+    if ('#{error}') {
+      alertify.error("#{error}");
+    }
+    if ('#{success}') {
+      alertify.success('#{success}');
+    }

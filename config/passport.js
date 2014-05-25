@@ -32,7 +32,7 @@ module.exports = function(passport, app) {
           var message = "Login failed: Incorrect password for user " + username;
           logger.info(message);
           return done(null, false, { message: message });
-          
+
         } else {
           return done(null, user);
         }
@@ -49,8 +49,11 @@ module.exports = function(passport, app) {
           var message = 'Signup Failed: User ' + username + ' already exists';
           logger.info(message);
           return done(null, false, { message: message });
+        } else {
+          var message = 'Created new user: ' + username + '. You may now login';
+          logger.info(message);
+          return done(null, user, { message: message });
         }
-        return done(null, user);
       });
     });
     })
