@@ -45,15 +45,6 @@ module.exports = function(app, passport) {
                                               failureRedirect: '/signup'}));
 };
 
-var userExists = function(username, onExists, onNotExists) {
-  users.find({username: username}, function(err, doc) {
-    if (doc.length == 0)
-      onNotExists();
-    else
-      onExists();
-  });
-}
-
 var isLoggedIn = function(req, res, next) {
   if (req.isAuthenticated()) {
     next();
