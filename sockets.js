@@ -13,6 +13,7 @@ var io;
 
 module.exports = function(sio, passport, sessionStore) {
   io = sio;
+  io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
     cookieParser : cookieParser,
     key: config.sessionKey,
@@ -25,7 +26,6 @@ module.exports = function(sio, passport, sessionStore) {
 
 var authSuccess = function(data, accept) {
   logger.info("Socket initiated by user " + data.user.username);
-  io.sockets.on('connection', onConnect);
   accept(null, true);
 }
 
