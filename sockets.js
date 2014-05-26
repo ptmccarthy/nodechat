@@ -29,7 +29,8 @@ var onConnect = function (socket) {
   socketManager.register(socket);
   socket.emit('message', {
     message: 'Connected to chat. Displaying ' + config.displayRecent + ' most recent messages...',
-    timestap: moment()
+    timestap: moment(),
+    recipients: 'all'
   });
 
   io.sockets.emit('active-users', {
