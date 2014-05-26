@@ -119,12 +119,16 @@ var onChatReceived = function(data) {
 }
 
 var sendRecentHistory = function (socket) {
-  chats.find({}, {limit: config.displayRecent, sort: {'timestamp': -1}}, function (err, doc){
-    // work backwards to send recent history in chronological order
-    for (var i = 1; i <= doc.length; i++) {
-      socket.emit('message', doc[doc.length-i]);
-    }
-  });
+  var user = getUserFromSocket(socket);
+  chats.find(
+    { $or: [{recipients: 'all'}, {recipients: user.username}, {username: user.username}] },
+    { limit: config.displayRecent, sort: {'timestamp': -1} },
+    function (err, doc) {
+      // work backwards to send recent history in chronological order
+      for (var i = 1; i <= doc.length; i++) {
+        socket.emit('message', doc[doc.length-i]);
+      }
+    });
 }
 
 var getUsernamesFromRoom = function(room) {
