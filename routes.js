@@ -10,7 +10,7 @@ module.exports = function(app, passport) {
   });
 
   // display current users. Currently very ugly.
-  app.get('/users', isLoggedIn, function(req, res) {
+  app.get('/users', isLoggedIn, isAdmin, function(req, res) {
     User.find({}, function(err, doc) {
       if(err) {
         res.status(400).send('error');
@@ -47,10 +47,24 @@ module.exports = function(app, passport) {
 };
 
 var isLoggedIn = function(req, res, next) {
-  console.log (req.isAuthenticated());
   if (req.isAuthenticated()) {
     next();
   } else {
     res.redirect('/login');
   }
+}
+
+var isAdmin = function(req, res, next) {
+  hasPermissions(req, res, 'admin', next);
+}
+
+var isSuperUser = function(req, res, next) {
+  hasPermissions(req, res, 'superuser', next);
+}
+
+var hasPermissions = function(req, res, required, next) {
+  if (req.user.hasSufficientPermissions(required))
+    next();
+  else
+    res.status(403).send("Insufficient privileges to view this resource.");
 }
