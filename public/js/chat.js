@@ -52,7 +52,7 @@ var updateBuddyList = function(data) {
 
 $(document).ready(function () {
   socket = io.connect(document.URL);
-  socket.emit('set-type', {type: 'chat'});
+  socket.emit('subscribe', {room: 'chat'});
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
@@ -89,7 +89,8 @@ $(document).ready(function () {
       message: text,
       username: username,
       recipients: recipients,
-      timestamp: moment()
+      timestamp: moment(),
+      room: 'chat'
     };
 
     socket.emit('chat-send', response);
