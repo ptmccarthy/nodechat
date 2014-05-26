@@ -1,10 +1,8 @@
 var config = require('./config/config_server');
 
 var flash = require('connect-flash');
-var monk = require('monk');
-var db = monk(config.mongoURL);
 
-var users = db.get('users');
+var User = require('./models/users');
 
 module.exports = function(app, passport) {
   app.get('/', isLoggedIn, function(req, res) {
@@ -13,7 +11,7 @@ module.exports = function(app, passport) {
 
   // display current users. Currently very ugly.
   app.get('/users', isLoggedIn, function(req, res) {
-    users.find({}, {}, function(err, doc) {
+    User.find({}, function(err, doc) {
       if(err) {
         res.status(400).send('error');
         logger.error("Error finding users. The doc is: " + doc);
@@ -49,6 +47,7 @@ module.exports = function(app, passport) {
 };
 
 var isLoggedIn = function(req, res, next) {
+  console.log (req.isAuthenticated());
   if (req.isAuthenticated()) {
     next();
   } else {
