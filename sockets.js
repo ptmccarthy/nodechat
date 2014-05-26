@@ -63,10 +63,7 @@ var onSubscribe = function(socket, room) {
       timestamp: moment(),
       recipients: 'all'
     });
-
-    // update the buddy list
-    var users = getUsernamesFromRoom(room);
-    io.sockets.in(room).emit('active-users', { users: users });
+    updateBuddyList(room);
   }
 }
 
@@ -86,9 +83,7 @@ var onUnsubscribe = function(socket, room) {
       recipients: 'all'
     });
 
-    //update the buddy list
-    var users = getUsernamesFromRoom(room);
-    io.sockets.in(room).emit('active-users', { users: users });
+    updateBuddyList(room);
   }
 }
 
@@ -129,6 +124,11 @@ var sendRecentHistory = function (socket) {
         socket.emit('message', doc[doc.length-i]);
       }
     });
+}
+
+var updateBuddyList = function(room) {
+  var users = getUsernamesFromRoom(room);
+  io.sockets.in(room).emit('active-users', { users: users });
 }
 
 var getUsernamesFromRoom = function(room) {
