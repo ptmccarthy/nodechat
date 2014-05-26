@@ -13,7 +13,18 @@ var displayMessage = function (data) {
     html += '<b>[' + moment(data.timestamp).format('h:mm a') + '] ';
     console.log(data.recipients);
     if (data.recipients != 'all') {
-      html += '[Private Message] ';
+      html += '(to ';
+      for (var i = 0; i < data.recipients.length; i++) {
+        if (data.recipients[i] == username) {
+          html += 'you';
+        } else {
+          html += data.recipients[i];
+        }
+        if (i + 1 < data.recipients.length) {
+          html += ', ';
+        }
+      }
+      html += ') ';
     }
     html += (data.username ? data.username : 'Server') + ': </b>';
     html += data.message + '<br />';
