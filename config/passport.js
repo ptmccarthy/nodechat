@@ -56,7 +56,8 @@ module.exports = function(passport, app) {
         } else {
           var user = new User();
           user.username = username;
-          user.password = user.generateHash(password);
+          user.setPassword(password);
+          user.setPermissionLevel('player');
           user.save(function(err) {
             if (err)
               throw err;

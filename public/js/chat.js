@@ -11,7 +11,6 @@ var displayMessage = function (data) {
     messages.push(data);
     var html = '';
     html += '<b>[' + moment(data.timestamp).format('h:mm a') + '] ';
-    console.log(data.recipients);
     if (data.recipients != 'all') {
       html += '(to ';
       for (var i = 0; i < data.recipients.length; i++) {
@@ -70,7 +69,8 @@ $(document).ready(function () {
   socket.on('disconnect', function () {
     data = {
       message: 'Connection to server lost.',
-      timestamp: moment()
+      timestamp: moment(),
+      recipients: 'all'
     }
     displayMessage(data);
   });
