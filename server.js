@@ -44,7 +44,7 @@ app.use(passport.session());
 // our helpers
 var passportConfig = require('./config/passport')(passport);
 var routes = require('./routes')(app, passport);
-var sockets = require('./sockets')(io, passport, sessionStore);
+var sockets = require('./sockets').init(io, passport, sessionStore);
 
 // server started, display info
 logger.info('server started at ' + moment().format('YYYY-MM-DD HH:MM:SS'));

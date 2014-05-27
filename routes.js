@@ -1,6 +1,10 @@
 var config = require('./config/config_server');
 
 var flash = require('connect-flash');
+var monk = require('monk');
+var db = monk(config.mongoURL);
+
+var sockets = require('./sockets');
 
 var User = require('./models/users');
 
@@ -17,6 +21,21 @@ module.exports = function(app, passport) {
         logger.error("Error finding users. The doc is: " + doc);
       } else {
         res.send(doc);
+      }
+    });
+  });
+
+
+  app.get('/user/:username/delete', isLoggedIn, isAdmin, function(req, res) {
+    User.findOne({ username: req.params.username }, function(err, user) {
+      if (err) throw err;
+      if (!user) {
+        res.send("User " + req.params.username + " does not exist.");
+      } else {
+        user.remove();
+        res.send("User " + req.params.username + " successfully removed.");
+
+        sockets.closeSocketsForUser(user);
       }
     });
   });

@@ -12,7 +12,7 @@ var chats = db.get('history');
 var io;
 var rooms = [];
 
-module.exports = function(sio, passport, sessionStore) {
+module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
   io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
@@ -23,6 +23,13 @@ module.exports = function(sio, passport, sessionStore) {
     success: authSuccess,
     failure: authFailure
   }));
+}
+
+module.exports.closeSocketsForUser = function(user) {
+  for (var i in rooms) {
+    var sockets = getSocketsForRoomByUsernames(rooms[i], [user.username]);
+    sockets[0].disconnect();
+  }
 }
 
 var onConnect = function (socket) {
