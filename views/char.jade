@@ -1,0 +1,19 @@
+extends layout
+
+block extraHeader
+  title Generate Character
+
+block content
+  .char_module
+    #char_list
+      | Characters owned by you:
+      br
+      - var chars = character_list
+        each item in chars
+          li= item
+      br
+    form.generate_char(action='/char', method='post')
+      .login_text Create New Character
+      input#char_name(name='char_name', type='text')
+      input#generatebtn(type='submit', value='Create')
+
