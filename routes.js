@@ -35,7 +35,7 @@ module.exports = function(app, passport) {
         user.remove();
         res.send("User " + req.params.username + " successfully removed.");
 
-        sockets.closeSocketsForUser(user);
+        sockets.closeSocketForUser(user);
       }
     });
   });
