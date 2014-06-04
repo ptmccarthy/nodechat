@@ -10,7 +10,10 @@ var db = monk(config.mongoURL);
 var chats = db.get('history');
 
 var io;
-var rooms = [];
+var rooms = {}; // { room_name: client_count }
+var buddyList = [];
+var userToSocketId = {};
+
 
 module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
@@ -25,11 +28,10 @@ module.exports.init = function(sio, passport, sessionStore) {
   }));
 }
 
-module.exports.closeSocketsForUser = function(user) {
-  for (var i in rooms) {
-    var sockets = getSocketsForRoomByUsernames(rooms[i], [user.username]);
-    sockets[0].disconnect();
-  }
+module.exports.closeSocketForUser = function(user) {
+  var socketId = userToSocketId[user.username];
+  var socket = io.sockets.connected[socketId];
+  socket.disconnect();
 }
 
 var onConnect = function (socket) {
@@ -38,20 +40,29 @@ var onConnect = function (socket) {
   socket.on('disconnect', function() { onDisconnect(socket) });
 
   socket.on('chat-send', function(data) { onChatReceived(data); });
+
+  var user = getUserFromSocket(socket);
+  userToSocketId[user.username] = socket.id;
 }
 
 var onDisconnect = function(socket) {
   logger.info('Socket disconnected. ID: ' + socket.id);
-  for (var i in rooms) {
-    onUnsubscribe(socket, rooms[i]);
+  var roomNames = Object.keys(rooms);
+  for (var i in roomNames) {
+    onUnsubscribe(socket, roomNames[i]);
   }
+
+  var user = getUserFromSocket(socket);
+  delete userToSocketId[user.username];
 }
 
 var onSubscribe = function(socket, room) {
   var user = getUserFromSocket(socket);
   socket.join(room);
-  if (rooms.indexOf(room) < 0) {
-    rooms.push(room);
+  if (rooms[room] == undefined) {
+    rooms[room] = 1;
+  } else {
+    rooms[room] += 1;
   }
 
   // custom startup behavior for different rooms
@@ -70,27 +81,26 @@ var onSubscribe = function(socket, room) {
       timestamp: moment(),
       recipients: 'all'
     });
-    updateBuddyList(room);
+
+    addToBuddyList(user);
   }
 }
 
 var onUnsubscribe = function(socket, room) {
   var user = getUserFromSocket(socket);
   socket.leave(room);
-  if (io.sockets.clients(room) == 0) {
-    rooms.splice(rooms.indexOf(room), 1);
-  }
+  rooms[room] -= 1;
 
   // custom exit behavior from different rooms
   if (room == 'chat') {
     // exited notification (to everyone)
-    io.sockets.in(room).emit('message', {
+    io.to(room).emit('message', {
       message: 'User ' + user.username + ' has left the chat.',
       timestamp: moment(),
       recipients: 'all'
     });
 
-    updateBuddyList(room);
+    removeFromBuddyList(user);
   }
 }
 
@@ -103,20 +113,18 @@ var onChatReceived = function(data) {
   } else if (data.recipients.length == 0) {
     logger.debug("Initializing chat-send listener: recipients is empty");
     data.recipients = 'all';
-  } else {
-    targetSockets = getSocketsForRoomByUsernames(room, data.recipients);
-    targetSockets = targetSockets.concat(getSocketsForRoomByUsernames(room, data.username));
   }
 
   if (data.recipients == 'all') {
-    io.sockets.in(room).emit('message', data);
+    io.to(room).emit('message', data);
   } else {
-    for (var i = 0; i < targetSockets.length; i++) {
-      var socket = targetSockets[i];
-      socket.emit('message', data);
+    for (var i = 0; i < data.recipients.length; i++) {
+      var socketId = userToSocketId[data.recipients[i]];
+      io.to(socketId).emit('message', data);
     }
+    var socketId = userToSocketId[data.username];
+    io.to(socketId).emit('message', data);
   }
-
   chats.insert(data);
 }
 
@@ -133,38 +141,21 @@ var sendRecentHistory = function (socket) {
     });
 }
 
-var updateBuddyList = function(room) {
-  var users = getUsernamesFromRoom(room);
-  io.sockets.in(room).emit('active-users', { users: users });
+var addToBuddyList = function(user) {
+  buddyList.push(user.username);
+  io.to('chat').emit('active-users', { users: buddyList });
 }
 
-var getUsernamesFromRoom = function(room) {
-  var allSockets = io.sockets.clients(room);
-  var users = [];
-  for (var i in allSockets) {
-    var socketUser = getUserFromSocket(allSockets[i]);
-    users.push(socketUser.username);
+var removeFromBuddyList = function(user) {
+  var index = buddyList.indexOf(user.username);
+  if (index > -1) {
+    buddyList.splice(index, 1);
+    io.to('chat').emit('active-users', { users: buddyList });
   }
-  return users;
-}
-
-var getSocketsForRoomByUsernames = function(room, usernames) {
-  var allSockets = io.sockets.clients(room);
-  var filteredSockets = [];
-  for (var i in allSockets) {
-    var socketUser = getUserFromSocket(allSockets[i]);
-    for (var j in usernames) {
-      if (socketUser.username == usernames[j]) {
-        filteredSockets.push(allSockets[i]);
-      }
-    }
-  }
-  return filteredSockets;
 }
 
 var getUserFromSocket = function(socket) {
-  // the user is retardedly deeply nested in the socket object.
-  var user = socket.manager.handshaken[socket.id].user;
+  var user = socket.client.request.user;
   return user;
 }
 
