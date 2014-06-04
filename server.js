@@ -17,7 +17,10 @@ var MongoStore = require('connect-mongo')(session);
 var sessionStore = new MongoStore({ db: config.databaseName });
 
 var io = require('socket.io');
+var mongoose = require('mongoose')
+
 var app = express();
+mongoose.connect(config.mongoURL);
 
 // set socket.io properties
 io = io.listen(app.listen(config.port), {

@@ -3,8 +3,6 @@ var config = require('../config/config_server');
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose');
 
-mongoose.connect(config.mongoURL);
-
 var Permissions = {
   admin: 0,
   superuser: 1,
@@ -44,6 +42,10 @@ userSchema.methods.getPermissionLevel = function() {
 
 userSchema.methods.setPermissionLevel = function(p) {
   this.permissions = Permissions[p];
+}
+
+userSchema.methods.addCharacter = function(char_id) {
+  this.characters.push(char_id);
 }
 
 var model = mongoose.model('User', userSchema);
