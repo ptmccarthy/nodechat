@@ -24,6 +24,8 @@ mongoose.connect(config.mongoURL, function(err) {
   if (err) {
     logger.error('Failed to connect to mongodb');
     throw err;
+  } else {
+    logger.info('Connected to mongodb at ' + config.mongoURL);
   }
 });
 
