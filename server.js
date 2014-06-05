@@ -4,6 +4,8 @@ var logger = require('./logger');
 // external libraries
 var express = require('express');
 var moment = require('moment');
+var io = require('socket.io');
+var mongoose = require('mongoose')
 
 // express middleware
 var passport = require('passport');
@@ -16,11 +18,16 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var sessionStore = new MongoStore({ db: config.databaseName });
 
-var io = require('socket.io');
-var mongoose = require('mongoose')
-
 var app = express();
-mongoose.connect(config.mongoURL);
+
+mongoose.connect(config.mongoURL, function(err) {
+  if (err) {
+    logger.error('Failed to connect to mongodb');
+    throw err;
+  } else {
+    logger.info('Connected to mongodb at ' + config.mongoURL);
+  }
+});
 
 // set socket.io properties
 io = io.listen(app.listen(config.port), {

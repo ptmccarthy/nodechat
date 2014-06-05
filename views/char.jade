@@ -14,6 +14,20 @@ block content
       br
     form.generate_char(action='/char', method='post')
       .login_text Create New Character
-      input#char_name(name='char_name', type='text')
+      .char_input_label Name:
+      input.char_input(name='char_name', type='text')
+      br
+      .char_input_label Gender:
+      input.char_input(name='char_gender', type='text')
+      br
+      .char_input_label Age:
+      input.char_input(name='char_age', type='number')
+      br
+      .char_input_label Race:
+      input.char_input(name='char_race', type='text')
+      br
+      .char_input_label Class:
+      input.char_input(name='char_class', type='text')
+      br
       input#generatebtn(type='submit', value='Create')
 
