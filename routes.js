@@ -1,122 +1,33 @@
-var config = require('./config/config_server');
-var logger = require('./logger')
-
-var flash = require('connect-flash');
-var monk = require('monk');
-var db = monk(config.mongoURL);
-
-var sockets = require('./sockets');
-
-var User = require('./models/users');
-var Character = require('./models/character');
+var appRoutes = require('./routes/app');
+var characterRoutes = require('./routes/characters');
+var userRoutes = require('./routes/users');
 
 module.exports = function(app, passport) {
-  app.get('/', isLoggedIn, hasActiveCharacter, function(req, res) {
-    var username = req.user.username;
-    Character.findOne({_id: req.session.character}, function(err, character) {
-      res.render('index', { 'user': username,
-                            'character': character });
-    });
-  });
+  // User routes
+  app.get('/users', isLoggedIn, isAdmin, userRoutes.users);
+  app.get('/user/:username/delete', isLoggedIn, isAdmin, userRoutes.deleteUser);
 
-  // scaffold for current users
-  app.get('/users', isLoggedIn, isAdmin, function(req, res) {
-    User.find({}, function(err, doc) {
-      if(err) {
-        res.status(400).send('error');
-        logger.error("Error finding users. The doc is: " + doc);
-      } else {
-        res.send(doc);
-      }
-    });
-  });
+  // Character routes
+  app.get('/gen_char', isLoggedIn, characterRoutes.renderCreateChar);
+  app.post('/gen_char', isLoggedIn, characterRoutes.createChar);
+  app.get('/pick_char', isLoggedIn, characterRoutes.renderSelectChar);
+  app.post('/pick_char', isLoggedIn, characterRoutes.selectChar);
 
-  // routes for creating a character
-  app.get('/gen_char', isLoggedIn, function(req, res) {
-    User.findOne({_id: req.user._id}, function(err, user) {
-      Character.find({_id: { $in: user.characters }}, function(err, character) {
-        res.render('gen_char', { 'character_list': character });
-      });
-    });
-  });
-
-  app.post('/gen_char', isLoggedIn, function(req, res) {
-    var character = new Character();
-    character.create(req.body);
-    User.findOne({_id: req.user._id}, function(err, user) {
-      if (err) {
-        logger.error('Could not find user id in db');
-      } else {
-        user.characters.push(character._id);
-        user.save();
-      }
-    })
-    res.redirect('pick_char');
-  });
-
-  // routes for picking a character
-  app.get('/pick_char', isLoggedIn, function(req, res) {
-    var selected_char;
-
-    User.findOne({_id: req.user._id}, function(err, user) {
-      Character.findOne({_id: req.session.character}, function(err, doc) {
-        selected_char = doc;
-
-        Character.find({_id: { $in: user.characters }}, function(err, doc) {
-          res.render('pick_char', { 'character_list': doc,
-                                    'selected_char': selected_char });
-        });
-      });
-    });
-  });
-
-  app.post('/pick_char', isLoggedIn, function(req, res) {
-    logger.info('User ' + req.user.username + ' selected character id: ' + req.body.char_selection);
-    req.session.character = req.body.char_selection;
-    res.redirect('/');
-  });
-
-
-  app.get('/user/:username/delete', isLoggedIn, isAdmin, function(req, res) {
-    User.findOne({ username: req.params.username }, function(err, user) {
-      if (err) throw err;
-      if (!user) {
-        res.send("User " + req.params.username + " does not exist.");
-      } else {
-        user.remove();
-        res.send("User " + req.params.username + " successfully removed.");
-
-        sockets.closeSocketForUser(user);
-      }
-    });
-  });
-
-  app.get('/logout', function(req, res) {
-    req.logout();
-    req.session.character = null;
-    res.redirect('/login');
-  });
-
-  app.get('/login', function(req, res) {
-    res.render('login', { success: req.flash('success'),
-                          error: req.flash('error')} );
-  });
-
-  app.post('/login', passport.authenticate('local-login',
-                                           { successRedirect: '/',
-                                             failureRedirect: '/login',
-                                             failureFlash: true })
-  );
-
-  // sign up route
-  app.post('/signup', passport.authenticate('local-signup',
-                                            { successRedirect: '/login',
-                                              failureRedirect: '/login',
-                                              successFlash: true,
-                                              failureFlash: true })
-  );
+  // general-purpose routes
+  app.get('/', isLoggedIn, hasActiveCharacter, appRoutes.index);
+  app.get('/logout', appRoutes.logout);
+  app.get('/login', appRoutes.loginPage);
+  // these two can't be refactored because they rely on having access to the passport object
+  app.post('/login', passport.authenticate('local-login', { successRedirect: '/',
+                                                            failureRedirect: '/login',
+                                                            failureFlash: true }) );
+  app.post('/signup', passport.authenticate('local-signup', { successRedirect: '/login',
+                                                              failureRedirect: '/login',
+                                                              successFlash: true,
+                                                              failureFlash: true }) );
 };
 
+// custom middleware
 var isLoggedIn = function(req, res, next) {
   if (req.isAuthenticated()) {
     next();
