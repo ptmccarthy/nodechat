@@ -1,8 +1,16 @@
-An experimental project for learning the ins and outs of socket.io and node.js through implementing a real-time multi-user chat application.
+## A platform for managing and tracking a table-top game.
 
-Lessons learned here will be applied to future projects...
+Note: this application is still in the very early stages of development and is not ready for real usage yet.
 
-Installation instructions:
+### Vision
+
+Table-top games, such as D&D, are ultimately a collaborative story-telling activity led by a DM. There is unfortunately a lot of manual overhead for these games, such as tracking character sheets (stats, items, quests, etc.), rolling dice for calculating hits, misses, saving throws, etc., lack of easy private player communication, and many other chores with a real element of human error and fallability.
+
+A web-based, multi-user platform for running a table-top game could potentially help alleviate much of this overhead and also allow for new complexities and intracacies by managing this overhead for the players and the DM alike.
+
+Imagine a game engine along the lines of Baldur's Gate or Neverwinter Nights, but where the game and story play out on the table in front of you and the computer only acts as a management system.
+
+### Installation instructions:
 
 1. install mongodb, e.g. on OS X using Homebrew `brew install mongodb`
 
