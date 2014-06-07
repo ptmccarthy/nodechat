@@ -1,0 +1,33 @@
+extends layout
+
+block extraHeader
+  title Choose Character
+
+block content
+  .char_module
+    .module_title Pick Your Character
+    br
+    form#char_list(action='/pick_char', method='post')
+      | Active character: '#{active_char}'
+      br
+      br
+      | Characters owned by you:
+      br
+      - var chars = character_list
+        each item in chars
+          input.char_list_item(type='radio', value='#{item._id}', name='char_selection')
+          | '#{item.name}'
+          br
+      br
+      input#choosechar(type='submit', value='Select')
+      br
+      br
+      a(class='button' href='/gen_char') Create a new character
+
+script.
+  var active_char
+  if ("#{selected_char}" === null) {
+    active_char = ""
+  } else {
+    active_char = "#{selected_char}"
+  }
