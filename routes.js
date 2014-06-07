@@ -92,6 +92,7 @@ module.exports = function(app, passport) {
 
   app.get('/logout', function(req, res) {
     req.logout();
+    req.session.character = null;
     res.redirect('/login');
   });
 
