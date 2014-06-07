@@ -11,8 +11,12 @@ var User = require('./models/users');
 var Character = require('./models/character');
 
 module.exports = function(app, passport) {
-  app.get('/', isLoggedIn, function(req, res) {
-    res.render('index', { 'username': req.user.username });
+  app.get('/', isLoggedIn, hasActiveCharacter, function(req, res) {
+    var username = req.user.username;
+    Character.findOne({_id: req.session.character}, function(err, character) {
+      res.render('index', { 'user': username,
+                            'character': character });
+    });
   });
 
   // scaffold for current users
@@ -27,28 +31,51 @@ module.exports = function(app, passport) {
     });
   });
 
-  // scaffold for creating a character
-  app.get('/char', isLoggedIn, function(req, res) {
+  // routes for creating a character
+  app.get('/gen_char', isLoggedIn, function(req, res) {
     User.findOne({_id: req.user._id}, function(err, user) {
-      Character.find({_id: { $in: user.characters }}, function(err, doc) {
-        res.render('char', { 'character_list': doc });
+      Character.find({_id: { $in: user.characters }}, function(err, character) {
+        res.render('gen_char', { 'character_list': character });
       });
     });
   });
 
-  app.post('/char', isLoggedIn, function(req, res) {
+  app.post('/gen_char', isLoggedIn, function(req, res) {
     var character = new Character();
     character.create(req.body);
     User.findOne({_id: req.user._id}, function(err, user) {
       if (err) {
-        logger.error('Could not find user id in db')
+        logger.error('Could not find user id in db');
       } else {
         user.characters.push(character._id);
         user.save();
       }
     })
-    res.redirect('char');
+    res.redirect('pick_char');
   });
+
+  // routes for picking a character
+  app.get('/pick_char', isLoggedIn, function(req, res) {
+    var selected_char;
+
+    User.findOne({_id: req.user._id}, function(err, user) {
+      Character.findOne({_id: req.session.character}, function(err, doc) {
+        selected_char = doc;
+
+        Character.find({_id: { $in: user.characters }}, function(err, doc) {
+          res.render('pick_char', { 'character_list': doc,
+                                    'selected_char': selected_char });
+        });
+      });
+    });
+  });
+
+  app.post('/pick_char', isLoggedIn, function(req, res) {
+    logger.info('User ' + req.user.username + ' selected character id: ' + req.body.char_selection);
+    req.session.character = req.body.char_selection;
+    res.redirect('/');
+  });
+
 
   app.get('/user/:username/delete', isLoggedIn, isAdmin, function(req, res) {
     User.findOne({ username: req.params.username }, function(err, user) {
@@ -66,6 +93,7 @@ module.exports = function(app, passport) {
 
   app.get('/logout', function(req, res) {
     req.logout();
+    req.session.character = null;
     res.redirect('/login');
   });
 
@@ -94,6 +122,14 @@ var isLoggedIn = function(req, res, next) {
     next();
   } else {
     res.redirect('/login');
+  }
+}
+
+var hasActiveCharacter = function(req, res, next) {
+  if (req.session.character) {
+    next();
+  } else {
+    res.redirect('pick_char');
   }
 }
 
