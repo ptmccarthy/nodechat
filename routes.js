@@ -57,14 +57,15 @@ module.exports = function(app, passport) {
   // routes for picking a character
   app.get('/pick_char', isLoggedIn, function(req, res) {
     var selected_char;
-    Character.findOne({_id: req.session.character}, function(err, doc) {
-      selected_char = doc;
-    });
 
     User.findOne({_id: req.user._id}, function(err, user) {
-      Character.find({_id: { $in: user.characters }}, function(err, doc) {
-        res.render('pick_char', { 'character_list': doc,
-                                  'selected_char': selected_char });
+      Character.findOne({_id: req.session.character}, function(err, doc) {
+        selected_char = doc;
+
+        Character.find({_id: { $in: user.characters }}, function(err, doc) {
+          res.render('pick_char', { 'character_list': doc,
+                                    'selected_char': selected_char });
+        });
       });
     });
   });
