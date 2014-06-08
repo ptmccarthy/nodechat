@@ -1,6 +1,7 @@
 var appRoutes = require('./routes/app');
 var characterRoutes = require('./routes/characters');
 var userRoutes = require('./routes/users');
+var itemRoutes = require('./routes/items');
 
 module.exports = function(app, passport) {
   // User routes
@@ -16,6 +17,9 @@ module.exports = function(app, passport) {
   app.get('/chars/:char_id', isLoggedIn, characterRoutes.getChar);
   app.post('/chars', isLoggedIn, characterRoutes.createChar);
   app.post('/chars/:char_id', isLoggedIn, characterRoutes.updateChar);
+
+  // Item routes
+  app.get('/items', isLoggedIn, isAdmin, itemRoutes.items);
 
   // general-purpose routes
   app.get('/', isLoggedIn, hasActiveCharacter, appRoutes.index);

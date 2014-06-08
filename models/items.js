@@ -11,7 +11,7 @@ var itemSchema = mongoose.Schema({
 });
 
 // static factory method
-itemSchema.statics.generateFromTemplate(template) {
+itemSchema.statics.generateFromTemplate = function(template) {
   var newItem = new this();
   newItem.name = template.name;
   newItem.description = template.description;
