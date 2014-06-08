@@ -51,3 +51,10 @@ module.exports.selectChar = function(req, res) {
   req.session.character = req.body.char_selection;
   res.redirect('/');
 }
+
+module.exports.chars = function(req, res) {
+  Character.find({}, function(err, doc) {
+    if (err) throw err;
+    res.send(doc);
+  });
+}

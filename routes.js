@@ -8,6 +8,7 @@ module.exports = function(app, passport) {
   app.get('/user/:username/delete', isLoggedIn, isAdmin, userRoutes.deleteUser);
 
   // Character routes
+  app.get('/chars', isLoggedIn, isAdmin, characterRoutes.chars);
   app.get('/gen_char', isLoggedIn, characterRoutes.renderCreateChar);
   app.post('/gen_char', isLoggedIn, characterRoutes.createChar);
   app.get('/pick_char', isLoggedIn, characterRoutes.renderSelectChar);
