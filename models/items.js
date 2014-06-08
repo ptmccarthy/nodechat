@@ -16,6 +16,7 @@ itemSchema.statics.generateFromTemplate = function(template) {
   newItem.name = template.name;
   newItem.description = template.description;
   newItem.template = false;
+  newItem.save();
   return newItem;
 }
 

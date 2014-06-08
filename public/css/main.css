@@ -69,10 +69,12 @@ input#sendbtn {
   float: right;
 }
 
-.chat_module, .char_module {
+.chat_module, .char_module, .item_module {
   display: inline-block;
+  vertical-align: top;
   padding: 5px;
   border: solid 1px #999;
+  margin: 5px;
 }
 
 .controls {

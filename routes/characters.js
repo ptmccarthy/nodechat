@@ -17,7 +17,10 @@ module.exports.createChar = function(req, res) {
 }
 
 module.exports.getChar = function(req, res) {
-  Character.findOne({ _id: req.params.char_id }, function(err, character) {
+  Character
+  .findOne({ _id: req.params.char_id })
+  .populate('inventory')
+  .exec(function(err, character) {
     var user = req.user;
     var userCanEdit = false;
     if (err) throw err;
