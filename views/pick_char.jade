@@ -7,8 +7,8 @@ block content
   .char_module
     .module_title Pick Your Character
     br
-    form#char_list(action='/pick_char', method='post')
-      | Active character: '#{active_char}'
+    form#char_list(action='/users/chars', method='post')
+      | Active character: #{active_char}
       br
       br
       | Characters owned by you:
@@ -17,10 +17,10 @@ block content
       - var chars = user.characters
         each item in chars
           input.char_list_item(type='radio', value='#{item._id}', name='char_selection')
-          | '#{item.name}'
+          a(class='button' href='/chars/#{item._id}') #{item.name}
           br
       br
-      input#choosechar(type='submit', value='Select')
+      input#choosechar(type='submit', value='Use character')
       br
       br
-      a(class='button' href='/gen_char') Create a new character
+      a(class='button' href='/chars/new') Create a new character

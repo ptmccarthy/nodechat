@@ -2,8 +2,9 @@ var config = require('../config/config_server');
 var logger = require('../logger');
 
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var charSchema = mongoose.Schema({
+var charSchema = Schema({
   name:       String,
   gender:     String,
   age:        Number,

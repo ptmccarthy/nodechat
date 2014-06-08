@@ -13,7 +13,7 @@ block content
         each item in chars
           li= item
       br
-    form.generate_char(action='/gen_char', method='post')
+    form.generate_char(action='/chars', method='post')
       .login_text Create New Character
       .char_input_label Name:
       input.char_input(name='char_name', type='text')
