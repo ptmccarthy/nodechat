@@ -13,7 +13,8 @@ block content
       br
       | Characters owned by you:
       br
-      - var chars = character_list
+      - var user = user_with_chars
+      - var chars = user.characters
         each item in chars
           input.char_list_item(type='radio', value='#{item._id}', name='char_selection')
           | '#{item.name}'
@@ -23,11 +24,3 @@ block content
       br
       br
       a(class='button' href='/gen_char') Create a new character
-
-script.
-  var active_char
-  if ("#{selected_char}" === null) {
-    active_char = ""
-  } else {
-    active_char = "#{selected_char}"
-  }

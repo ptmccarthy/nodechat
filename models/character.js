@@ -10,7 +10,7 @@ var charSchema = mongoose.Schema({
   race:       String,
   class:      String,
 
-  inventory:  Array,
+  inventory:  [{ type: Schema.Types.ObjectId, ref: 'Item' }],
   gold:       Number
 });
 

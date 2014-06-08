@@ -8,7 +8,8 @@ block content
     #char_list
       | Characters owned by you:
       br
-      - var chars = character_list
+      - var user = user_with_chars
+      - var chars = user.characters
         each item in chars
           li= item
       br

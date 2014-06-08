@@ -17,29 +17,32 @@ module.exports.createChar = function(req, res) {
 }
 
 module.exports.renderCreateChar = function(req, res) {
-  User.findOne({_id: req.user._id}, function(err, user) {
-    Character.find({_id: { $in: user.characters }}, function(err, character) {
-      res.render('gen_char', { 'character_list': character });
-    });
+  User
+  .findOne({_id: req.user._id})
+  .populate('characters')
+  .exec(function(err, user) {
+    res.render('gen_char', { 'user_with_chars': user });
   });
 }
 
 module.exports.renderSelectChar = function(req, res) {
   var selected_char;
 
-  User.findOne({_id: req.user._id}, function(err, user) {
-    Character.find({_id: { $in: user.characters }}, function(err, doc) {
-      for (ch in doc) {
-        if (doc[ch]._id == req. session.character) {
-          selected_char = doc[ch];
-        }
+  User
+  .findOne({_id: req.user._id})
+  .populate( 'characters')
+  .exec(function(err, user) {
+    var chars = user.characters;
+    for (ch in chars) {
+      if (chars[ch]._id == req. session.character) {
+        selected_char = chars[ch];
       }
-      if (!selected_char) {
-        selected_char = { name: '[None]' };
-      }
-      res.render('pick_char', { 'character_list': doc,
-                                'active_char': selected_char.name });
-    });
+    }
+    if (!selected_char) {
+      selected_char = { name: '[None]' };
+    }
+    res.render('pick_char', { 'user_with_chars': user,
+                              'active_char': selected_char.name });
   });
 }
 
