@@ -2,6 +2,7 @@ var config = require('../config/config_server');
 
 var bcrypt = require('bcrypt-nodejs');
 var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 var Permissions = {
   admin: 0,
@@ -9,13 +10,13 @@ var Permissions = {
   player: 2
 };
 
-var userSchema = mongoose.Schema({
+var userSchema = Schema({
   username:     String,
   password:     String,
   permissions:  Number,
 
-  characters:   Array,
-  data:         mongoose.Schema.Types.Mixed
+  characters:   [{ type: Schema.Types.ObjectId, ref: 'Character' }],
+  data:         Schema.Types.Mixed
 });
 
 userSchema.methods.setPassword = function(password) {

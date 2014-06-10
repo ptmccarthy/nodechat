@@ -1,0 +1,54 @@
+extends layout
+
+block extraHeader
+  title Create Item
+
+block content
+  form.create_item(action='/items', method='post')
+    .item_module
+      .module_title Create Item
+        br
+      div
+        .item_module
+          .login_text Item type:
+          input#template.item_type(name='item_type', value='template', type='radio')
+          |Create Template
+          br
+          input#unique.item_type(name='item_type', value='unique', type='radio')
+          |Create a Unique Item
+          br
+          input#clone.item_type(name='item_type', value='clone', type='radio')
+          |Clone a Template
+          br
+
+        #item_form.item_module
+          .login_text Describe your item:
+          .char_input_label Name:
+          input.char_input(name='name', type='text')
+          br
+          .char_input_label Descr:
+          input.char_input(name='description', type='text')
+          br
+
+
+        #template_list.item_module
+          .login_text Choose a template to clone:
+          each item in templates
+            input.item_template(name='template', value='#{item._id}', type='radio')
+            =item.name
+            br
+
+        #user_list.item_module
+          .login_text Choose a character to assign the item to:
+          each user in users
+            each character in user.characters
+              input.char_list(name='character', value='#{character._id}', type='radio')
+              =character.name
+              |  (
+              =user.username
+              |)
+              br
+
+      input#createbutton(type='submit', value='Create Item')
+
+  script(src='/js/create_item.js')

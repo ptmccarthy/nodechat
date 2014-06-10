@@ -13,38 +13,58 @@ module.exports.createChar = function(req, res) {
       user.save();
     }
   })
-  res.redirect('pick_char');
+  res.redirect('/users/me');
+}
+
+module.exports.getChar = function(req, res) {
+  Character
+  .findOne({ _id: req.params.char_id })
+  .populate('inventory')
+  .exec(function(err, character) {
+    var user = req.user;
+    var userCanEdit = false;
+    if (err) throw err;
+    for (var ch in user.characters) {
+      if (user.characters[ch] == req.params.char_id) {
+        userCanEdit = true;
+      }
+    }
+    if (user.hasSufficientPermissions('admin')) {
+      userCanEdit = true;
+    }
+    res.render('char', { 'character': character,
+                         'editable': userCanEdit });
+  });
+}
+
+module.exports.updateChar = function(req, res) {
+  var charId = req.params.char_id;
+  var body = req.body;
+  Character.findOne({_id: charId}, function(err, character) {
+    if (err) throw err;
+    character.name = body.char_name;
+    character.age = body.char_age;
+    character.gender = body.char_gender;
+    character.race = body.char_race;
+    character.class = body.char_class;
+    character.save();
+
+    res.redirect('/users/me');
+  });
 }
 
 module.exports.renderCreateChar = function(req, res) {
-  User.findOne({_id: req.user._id}, function(err, user) {
-    Character.find({_id: { $in: user.characters }}, function(err, character) {
-      res.render('gen_char', { 'character_list': character });
-    });
+  User
+  .findOne({_id: req.user._id})
+  .populate('characters')
+  .exec(function(err, user) {
+    res.render('gen_char', { 'user_with_chars': user });
   });
 }
 
-module.exports.renderSelectChar = function(req, res) {
-  var selected_char;
-
-  User.findOne({_id: req.user._id}, function(err, user) {
-    Character.find({_id: { $in: user.characters }}, function(err, doc) {
-      for (ch in doc) {
-        if (doc[ch]._id == req. session.character) {
-          selected_char = doc[ch];
-        }
-      }
-      if (!selected_char) {
-        selected_char = { name: '[None]' };
-      }
-      res.render('pick_char', { 'character_list': doc,
-                                'active_char': selected_char.name });
-    });
+module.exports.chars = function(req, res) {
+  Character.find({}, function(err, doc) {
+    if (err) throw err;
+    res.send(doc);
   });
-}
-
-module.exports.selectChar = function(req, res) {
-  logger.info('User ' + req.user.username + ' selected character id: ' + req.body.char_selection);
-  req.session.character = req.body.char_selection;
-  res.redirect('/');
 }

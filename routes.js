@@ -1,17 +1,27 @@
 var appRoutes = require('./routes/app');
 var characterRoutes = require('./routes/characters');
 var userRoutes = require('./routes/users');
+var itemRoutes = require('./routes/items');
 
 module.exports = function(app, passport) {
   // User routes
   app.get('/users', isLoggedIn, isAdmin, userRoutes.users);
-  app.get('/user/:username/delete', isLoggedIn, isAdmin, userRoutes.deleteUser);
+  app.delete('/users/:username', isLoggedIn, isAdmin, userRoutes.deleteUser);
+
+  app.get('/users/me', isLoggedIn, userRoutes.getChars);
+  app.post('/users/chars', isLoggedIn, userRoutes.selectChar);
 
   // Character routes
-  app.get('/gen_char', isLoggedIn, characterRoutes.renderCreateChar);
-  app.post('/gen_char', isLoggedIn, characterRoutes.createChar);
-  app.get('/pick_char', isLoggedIn, characterRoutes.renderSelectChar);
-  app.post('/pick_char', isLoggedIn, characterRoutes.selectChar);
+  app.get('/chars', isLoggedIn, isAdmin, characterRoutes.chars);
+  app.get('/chars/new', isLoggedIn, characterRoutes.renderCreateChar);
+  app.get('/chars/:char_id', isLoggedIn, characterRoutes.getChar);
+  app.post('/chars', isLoggedIn, characterRoutes.createChar);
+  app.post('/chars/:char_id', isLoggedIn, characterRoutes.updateChar);
+
+  // Item routes
+  app.get('/items', isLoggedIn, isAdmin, itemRoutes.items);
+  app.get('/items/new', isLoggedIn, isAdmin, itemRoutes.renderCreateItem);
+  app.post('/items', isLoggedIn, isAdmin, itemRoutes.createItem);
 
   // general-purpose routes
   app.get('/', isLoggedIn, hasActiveCharacter, appRoutes.index);
@@ -40,7 +50,7 @@ var hasActiveCharacter = function(req, res, next) {
   if (req.session.character) {
     next();
   } else {
-    res.redirect('pick_char');
+    res.redirect('users/me');
   }
 }
 

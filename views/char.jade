@@ -1,0 +1,72 @@
+extends layout
+
+block extraHeader
+  if editable
+    - var editText = 'Edit'
+  else
+    - var editText = 'View'
+  title #{editText} Character
+
+block content
+  .char_module
+    .module_title #{editText} Character
+    br
+    form.edit_char(action='/chars/#{character._id}', method='post')
+      #name
+        .plainText
+          |Name: #{character.name}
+        .editable
+          |Name: 
+          input.char_input(name='char_name', type='text', value='#{character.name}')
+      #gender
+        .plainText
+          |Gender: #{character.gender}
+        .editable
+          |Gender: 
+          input.char_input(name='char_gender', type='text', value='#{character.gender}')
+      #age
+        .plainText
+          |Age: #{character.age}
+        .editable
+          |Age: 
+          input.char_input(name='char_age', type='number', value='#{character.age}')
+      #race
+        .plainText
+          |Race: #{character.race}
+        .editable
+          |Race: 
+          input.char_input(name='char_race', type='text', value='#{character.race}')
+      #class
+        .plainText
+          |Class: #{character.class}
+        .editable
+          |Class: 
+          input.char_input(name='char_class', type='text', value='#{character.class}')
+      br
+      #inventory
+        |Inventory:
+        .editable
+          table
+            - var inventory = character.inventory
+            each item in inventory
+              tr
+                td
+                  input(type='checkbox', name='#{item._id}')
+                td
+                  =item.name
+                td
+                  =item.description
+        .plainText
+          table
+            tr
+              td
+      br
+      .editable
+        input#updateChar(type='submit', value='Update Character')
+
+  script(type='text/javascript').
+    if ("#{editable}" == "true") {
+      $('.plainText').hide();
+    } else {
+      $('.editable').hide();
+    }

@@ -8,11 +8,12 @@ block content
     #char_list
       | Characters owned by you:
       br
-      - var chars = character_list
+      - var user = user_with_chars
+      - var chars = user.characters
         each item in chars
           li= item
       br
-    form.generate_char(action='/gen_char', method='post')
+    form.generate_char(action='/chars', method='post')
       .login_text Create New Character
       .char_input_label Name:
       input.char_input(name='char_name', type='text')
