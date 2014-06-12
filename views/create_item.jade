@@ -41,13 +41,14 @@ block content
         #user_list.item_module
           .login_text Choose a character to assign the item to:
           each user in users
-            each character in user.characters
-              input.char_list(name='character', value='#{character._id}', type='radio')
-              =character.name
-              |  (
-              =user.username
-              |)
-              br
+            if user.characters
+              each character in user.characters
+                input.char_list(name='character', value='#{character._id}', type='radio')
+                =character.name
+                |  (
+                =user.username
+                |)
+                br
 
       input#createbutton(type='submit', value='Create Item')
 
