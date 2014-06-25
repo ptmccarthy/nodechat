@@ -9,6 +9,12 @@ module.exports.items = function(req, res) {
   });
 }
 
+module.exports.myItems = function(req, res) {
+  Item.find({ owned_by: req.session.character }, function (err, doc) {
+    res.send(doc);
+  });
+}
+
 module.exports.renderCreateItem = function(req, res) {
   Item.find({template: true}, function(err, items) {
     User

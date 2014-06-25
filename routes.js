@@ -20,6 +20,7 @@ module.exports = function(app, passport) {
 
   // Item routes
   app.get('/items', isLoggedIn, isAdmin, itemRoutes.items);
+  app.get('/items/me', isLoggedIn, itemRoutes.myItems);
   app.get('/items/new', isLoggedIn, isAdmin, itemRoutes.renderCreateItem);
   app.post('/items', isLoggedIn, isAdmin, itemRoutes.createItem);
 
