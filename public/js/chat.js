@@ -67,7 +67,7 @@ var updateInventory = function(data) {
 $(document).ready(function () {
   socket = io.connect(document.URL);
   socket.emit('subscribe', {room: 'chat'});
-  socket.emit('subscribe', {room: 'inventory', character: character._id});
+  socket.emit('subscribe', {room: 'inventory'});
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
