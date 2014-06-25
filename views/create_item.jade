@@ -5,7 +5,7 @@ block extraHeader
 
 block content
   form.create_item(action='/items', method='post')
-    .item_module
+    .module
       .module_title Create Item
         br
       div
@@ -21,7 +21,7 @@ block content
           |Clone a Template
           br
 
-        #item_form.item_module
+        #item_form.module
           .login_text Describe your item:
           .char_input_label Name:
           input.char_input(name='name', type='text')
@@ -31,14 +31,14 @@ block content
           br
 
 
-        #template_list.item_module
+        #template_list.module
           .login_text Choose a template to clone:
           each item in templates
             input.item_template(name='template', value='#{item._id}', type='radio')
             =item.name
             br
 
-        #user_list.item_module
+        #user_list.module
           .login_text Choose a character to assign the item to:
           each user in users
             if user.characters

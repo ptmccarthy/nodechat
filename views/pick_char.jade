@@ -2,9 +2,10 @@ extends layout
 
 block extraHeader
   title Choose Character
+  link(rel='stylesheet', href='/css/char.css')
 
 block content
-  .char_module
+  .module
     .module_title Pick Your Character
     br
     form#char_list(action='/users/chars', method='post')

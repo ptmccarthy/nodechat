@@ -3,73 +3,18 @@ body {
   font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
-span.buddyItems {
-  display: table-row;
-}
-
 .banner {
   font-size: 2em;
   height: 1.1em;
 }
 
-.module_title {
-  font-size: 1.2em;
-  font-style: italic;
+a.banner_text:link, a.banner_text:visited {
+  text-decoration: none;
+  font-weight: bold;
+  color: green;
 }
 
-.login_element {
-  display: inline-block;
-  margin: 0.2em;
-  padding: 1em;
-  width: 16em;
-  height: 9em;
-  border: solid 1px #999;
-}
-
-form.login {
-  width: 100%;;
-}
-
-.login_text {
-  font-size: 1em;
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.char_input_label {
-  display: inline-block;
-  width: 4em;
-}
-
-input.char_input {
-  display: inline-block;
-  width: 15em;
-  box-sizing: border-box;
-  box-shadow: 
-    inset 0 0 4px  rgba(0,0,0,0.1),
-          0 0 8px rgba(0,0,0,0.1); 
-  padding: 0.5em;
-  margin-left: 1em;
-}
-
-input#username, input#password {
-  font-size: 0.8em;
-  height: 2.2em;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 
-    inset 0 0 4px  rgba(0,0,0,0.1),
-          0 0 8px rgba(0,0,0,0.1); 
-  padding: 0.5em;
-}
-
-input#sendbtn {
-  margin-top: 0.8em;
-  cursor: pointer;
-  float: right;
-}
-
-.chat_module, .char_module, .item_module {
+.module {
   display: inline-block;
   vertical-align: top;
   padding: 5px;
@@ -77,55 +22,13 @@ input#sendbtn {
   margin: 5px;
 }
 
+.module_title {
+  font-size: 1.2em;
+  font-style: italic;
+}
+
 .controls {
   margin: 0.2em;
 }
 
-#chatbox {
-  width: 34em;
-  height: 15em;
-  padding: 0.4em;
-  margin: 0.5em;
-  border: solid 1px #999;
-  font-size: 1em;
-  overflow-y: scroll;
-  display: inline-block;
-}
 
-#buddylist {
-  width: 10em;
-  height: 15em;
-  padding: 0.4em;
-  border: solid 1px #999;
-  margin: 0.5em;
-  font-size: 1em;
-  overflow-y: scroll;
-  display: inline-block;
-}
-
-.buddylist-title {
-  width: 12em;
-  height: 1.2em;
-  text-align: center;
-  display: inline-block;
-  position: relative;
-  float: right;
-}
-
-#username {
-  width: 20em;
-  height: 1.2em;
-}
-
-.user_name {
-  width: 20em;
-  height: 1.2em;
-  display: inline-block;
-}
-
-#chatfield {
-  font-size: 1em;
-  height: 1.2em;
-  width: 34em;
-  margin-top: 0.5em;
-}
