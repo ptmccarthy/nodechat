@@ -47,6 +47,7 @@ module.exports.updateChar = function(req, res) {
     character.gender = body.char_gender;
     character.race = body.char_race;
     character.class = body.char_class;
+    character.alignment = body.char_alignment;
     character.save();
 
     res.redirect('/users/me');

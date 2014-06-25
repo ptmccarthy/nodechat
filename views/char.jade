@@ -42,6 +42,12 @@ block content
         .editable
           |Class: 
           input.char_input(name='char_class', type='text', value='#{character.class}')
+      #alignment
+        .plainText
+          |Alignment: #{character.alignment}
+        .editable
+          |Alignment:
+          input.char_input(name='char_alignment', type='text', value='#{character.alignment}')
       br
       #inventory
         |Inventory:
