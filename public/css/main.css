@@ -35,8 +35,9 @@ a.banner_text:hover {
 .module {
   display: inline-block;
   vertical-align: top;
-  padding: 5px;
-  border: solid 1px #999;
+  padding: 7px;
+  border: solid 2px #999;
+  border-radius: 15px;
   margin: 5px;
 }
 
@@ -44,9 +45,3 @@ a.banner_text:hover {
   font-size: 1.2em;
   font-style: italic;
 }
-
-.controls {
-  margin: 0.2em;
-}
-
-
