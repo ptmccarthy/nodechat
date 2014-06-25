@@ -3,11 +3,14 @@ var logger = require('./logger');
 
 var moment = require('moment');
 var monk = require('monk');
+var ObjectId = require('mongodb').ObjectID;
 var cookieParser = require('cookie-parser');
 var passportio = require('passport.socketio');
 
 var db = monk(config.mongoURL);
 var chats = db.get('history');
+var items = db.get('items');
+var sessions = db.get('sessions');
 
 var io;
 var rooms = {}; // { room_name: client_count }
@@ -35,7 +38,7 @@ module.exports.closeSocketForUser = function(user) {
 }
 
 var onConnect = function (socket) {
-  socket.on('subscribe', function(data) { onSubscribe(socket, data.room); });
+  socket.on('subscribe', function(data) { onSubscribe(socket, data); });
   socket.on('unsubscribe', function(data) { onUnsubscribe(socket, data.room); });
   socket.on('disconnect', function() { onDisconnect(socket) });
 
@@ -56,8 +59,9 @@ var onDisconnect = function(socket) {
   delete userToSocketId[user.username];
 }
 
-var onSubscribe = function(socket, room) {
+var onSubscribe = function(socket, data) {
   var user = getUserFromSocket(socket);
+  var room = data.room;
   socket.join(room);
   if (rooms[room] == undefined) {
     rooms[room] = 1;
@@ -83,6 +87,9 @@ var onSubscribe = function(socket, room) {
     });
 
     addToBuddyList(user);
+  }
+  if (room == 'inventory') {
+    sendInventory(socket, data.character);
   }
 }
 
@@ -169,3 +176,16 @@ var authFailure = function(data, message, error, accept) {
   logger.info("Socket auth failed: " + message);
   accept(null, false);
 }
+
+
+
+// hacking in inventory stuff, this shit will need to be refactored
+
+var sendInventory = function(socket, character) {
+  items.find({ owned_by: character }, function (err, doc) {
+    logger.info(JSON.stringify(doc));
+    io.to(socket.id).emit('update-inventory', { inventory: doc });
+  });
+
+}
+

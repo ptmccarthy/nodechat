@@ -3,6 +3,7 @@ var config = require('../config/config_server');
 var mongoose = require('mongoose');
 
 var itemSchema = mongoose.Schema({
+  owned_by:       String,
   name:           String,
   description:    String,
 

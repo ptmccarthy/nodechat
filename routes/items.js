@@ -37,6 +37,7 @@ var generateItem = function(req, res, character) {
       if (err) throw err;
       var item = Item.generateFromTemplate(item);
       if (character) {
+        item.owned_by = character._id;
         character.inventory.push(item._id);
         character.save();
       }
@@ -50,6 +51,7 @@ var generateItem = function(req, res, character) {
     item.save();
     if (req.body.item_type == 'unique') {
       if (character) {
+        item.owned_by = character._id;
         character.inventory.push(item._id);
         character.save();
       }
