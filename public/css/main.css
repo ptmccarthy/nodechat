@@ -1,17 +1,35 @@
 body {
+  padding: 0;
+  margin: 0;
   font-size: 1em;
   font-family: "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
 .banner {
-  font-size: 2em;
-  height: 1.1em;
+  height: 1.8em;
+  width: 100%;
+  background: black;
+}
+
+a.banner_title:link, a.banner_title:visited {
+  float: left;
+  padding-left: 5px;
+  font-size: 1.5em;
+  text-decoration: none;
+  color: white;
 }
 
 a.banner_text:link, a.banner_text:visited {
+  float: right;
+  padding-top: 0.3em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
   text-decoration: none;
-  font-weight: bold;
-  color: green;
+  color: white;
+}
+
+a.banner_text:hover {
+  color: #FF4A4A;
 }
 
 .module {

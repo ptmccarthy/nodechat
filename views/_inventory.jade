@@ -1,0 +1,8 @@
+block content
+  .module
+    .module_title Inventory
+    .controls
+      div.inventory
+        - var items = character.inventory
+          each item in items
+            | #{item}

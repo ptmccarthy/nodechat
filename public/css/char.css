@@ -13,3 +13,7 @@ input.char_input {
   padding: 0.5em;
   margin-left: 1em;
 }
+
+.char_name {
+  font-weight: bold;
+}
