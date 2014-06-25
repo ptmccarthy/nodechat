@@ -2,15 +2,14 @@ extends layout
 
 block extraHeader
   title D&D Platform
+  link(rel='stylesheet', href='/css/chat.css')
+  link(rel='stylesheet', href='/css/char.css')
   script(src='/socket.io/socket.io.js')
   script(src='/lib/moment.min.js')
   script(src='/js/chat.js')
 
 block content
+  include _char
+  include _inventory
+  br
   include _chat
-
-  .controls
-    a(href='/users/me') Choose a different character
-    br
-    br
-    a(href='/logout') Click here to make all your wildest dreams come true.

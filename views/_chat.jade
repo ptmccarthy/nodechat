@@ -1,16 +1,17 @@
 block content
-  .chat_module
+  #chat_module.module
     .module_title Player Chat
     .controls
       div.user_name User Name: #{user}
-      div.char_name Character: #{character.name}
       div.buddylist-title Online Users
     #chatbox
     #buddylist
     .controls
       input#chatfield()
-      input#sendbtn(type='button', value='send')
+      input#sendbtn(type='button', value='Send')
 
 script.
   // this var must be declared for client-side script to work
   var username = "#{user}";
+  var character = !{JSON.stringify(character)};
+

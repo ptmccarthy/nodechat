@@ -1,0 +1,56 @@
+.user_name {
+  width: 20em;
+  height: 1.2em;
+  display: inline-block;
+}
+
+span.buddyItems {
+  display: table-row;
+}
+
+input#sendbtn {
+  margin-top: 1.3em;
+  cursor: pointer;
+  float: right;
+}
+
+#username {
+  width: 40em;
+  height: 1.2em;
+}
+
+#buddylist {
+  width: 8em;
+  height: 15em;
+  padding: 0.4em;
+  border: solid 1px #999;
+  margin-left: 0.5em;
+  font-size: 1em;
+  overflow-y: scroll;
+  display: inline-block;
+}
+
+.buddylist-title {
+  width: 9em;
+  height: 1.2em;
+  display: inline-block;
+  text-align: center;
+  float: right;
+}
+
+#chatfield {
+  font-size: 1em;
+  height: 1.5em;
+  width: 36em;
+  margin-top: 0.5em;
+}
+
+#chatbox {
+  font-size: 1em;
+  width: 30em;
+  height: 15em;
+  padding: 0.4em;
+  border: solid 1px #999;
+  overflow-y: scroll;
+  display: inline-block;
+}

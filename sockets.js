@@ -8,6 +8,8 @@ var passportio = require('passport.socketio');
 
 var db = monk(config.mongoURL);
 var chats = db.get('history');
+var items = db.get('items');
+var sessions;
 
 var io;
 var rooms = {}; // { room_name: client_count }
@@ -17,6 +19,7 @@ var userToSocketId = {};
 
 module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
+  sessions = sessionStore;
   io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
     cookieParser : cookieParser,
@@ -83,6 +86,9 @@ var onSubscribe = function(socket, room) {
     });
 
     addToBuddyList(user);
+  }
+  if (room == 'inventory') {
+    sendInventory(socket);
   }
 }
 
@@ -169,3 +175,17 @@ var authFailure = function(data, message, error, accept) {
   logger.info("Socket auth failed: " + message);
   accept(null, false);
 }
+
+
+
+// hacking in inventory stuff, this shit will need to be refactored
+
+var sendInventory = function(socket) {
+  sessions.get(socket.client.request.sessionID, function (err, session) {
+
+    items.find({ owned_by: session.character }, function (err, doc) {
+      io.to(socket.id).emit('update-inventory', { inventory: doc });
+    });
+  });
+}
+

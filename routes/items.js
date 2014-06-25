@@ -9,6 +9,12 @@ module.exports.items = function(req, res) {
   });
 }
 
+module.exports.myItems = function(req, res) {
+  Item.find({ owned_by: req.session.character }, function (err, doc) {
+    res.send(doc);
+  });
+}
+
 module.exports.renderCreateItem = function(req, res) {
   Item.find({template: true}, function(err, items) {
     User
@@ -37,6 +43,7 @@ var generateItem = function(req, res, character) {
       if (err) throw err;
       var item = Item.generateFromTemplate(item);
       if (character) {
+        item.owned_by = character._id;
         character.inventory.push(item._id);
         character.save();
       }
@@ -50,6 +57,7 @@ var generateItem = function(req, res, character) {
     item.save();
     if (req.body.item_type == 'unique') {
       if (character) {
+        item.owned_by = character._id;
         character.inventory.push(item._id);
         character.save();
       }

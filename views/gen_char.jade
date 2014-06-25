@@ -2,9 +2,10 @@ extends layout
 
 block extraHeader
   title Generate Character
+  link(rel='stylesheet', href='/css/char.css')
 
 block content
-  .char_module
+  .module
     #char_list
       | Characters owned by you:
       br
@@ -29,6 +30,9 @@ block content
       br
       .char_input_label Class:
       input.char_input(name='char_class', type='text')
+      br
+      .char_input_label Alignment:
+      input.char_input(name='char_alignment', type='text')
       br
       input#generatebtn(type='submit', value='Create')
 

@@ -5,6 +5,7 @@ var chatfield;
 var sendButton;
 var chatbox;
 var buddyList;
+var inventory;
 
 var displayMessage = function (data) {
    if (data.message) {
@@ -49,14 +50,30 @@ var updateBuddyList = function(data) {
   buddyList.html(html);
 }
 
+// hacked in for inventory
+var updateInventory = function(data) {
+  if (data.inventory) {
+    inv = data.inventory;
+  }
+  var html = '';
+  for (var i = 0; i < inv.length; i++) {
+    html += '<span class="inv_item">';
+    html += inv[i].name + ' -- ' + inv[i].description;
+    html += '</span><br>';
+  }
+  inventory.html(html);
+}
+
 $(document).ready(function () {
   socket = io.connect(document.URL);
   socket.emit('subscribe', {room: 'chat'});
+  socket.emit('subscribe', {room: 'inventory'});
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
   chatbox = $('#chatbox').select();
   buddyList = $('#buddylist').select();
+  inventory = $('#inventory').select();
 
   socket.on('message', function (data) {
     displayMessage(data);
@@ -64,6 +81,11 @@ $(document).ready(function () {
 
   socket.on('active-users', function(data) {
     updateBuddyList(data);
+  });
+
+  // hacked in for inventory
+  socket.on('update-inventory', function(data) {
+    updateInventory(data);
   });
 
   socket.on('disconnect', function () {

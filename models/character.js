@@ -10,6 +10,7 @@ var charSchema = Schema({
   age:        Number,
   race:       String,
   class:      String,
+  alignment:  String,
 
   inventory:  [{ type: Schema.Types.ObjectId, ref: 'Item' }],
   gold:       Number
@@ -22,6 +23,7 @@ charSchema.methods.create = function(details) {
   this.age = details.char_age;
   this.race = details.char_race;
   this.class = details.char_class;
+  this.alignment = details.char_alignment;
   this.gold = 0;
   this.save(function(err,char) {
     logger.info('Saved character ' + char.name + ' with id: ' + char._id);

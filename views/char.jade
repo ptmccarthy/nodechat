@@ -1,6 +1,7 @@
 extends layout
 
 block extraHeader
+  link(rel='stylesheet', href='/css/char.css')
   if editable
     - var editText = 'Edit'
   else
@@ -8,7 +9,7 @@ block extraHeader
   title #{editText} Character
 
 block content
-  .char_module
+  .module
     .module_title #{editText} Character
     br
     form.edit_char(action='/chars/#{character._id}', method='post')
@@ -42,6 +43,12 @@ block content
         .editable
           |Class: 
           input.char_input(name='char_class', type='text', value='#{character.class}')
+      #alignment
+        .plainText
+          |Alignment: #{character.alignment}
+        .editable
+          |Alignment:
+          input.char_input(name='char_alignment', type='text', value='#{character.alignment}')
       br
       #inventory
         |Inventory:
