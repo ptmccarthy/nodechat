@@ -58,7 +58,7 @@ var updateInventory = function(data) {
   var html = '';
   for (var i = 0; i < inv.length; i++) {
     html += '<span class="inv_item">';
-    html += inv[i].name;
+    html += inv[i].name + ' -- ' + inv[i].description;
     html += '</span><br>';
   }
   inventory.html(html);
