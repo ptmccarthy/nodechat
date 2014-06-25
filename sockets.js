@@ -3,7 +3,6 @@ var logger = require('./logger');
 
 var moment = require('moment');
 var monk = require('monk');
-var ObjectId = require('mongodb').ObjectID;
 var cookieParser = require('cookie-parser');
 var passportio = require('passport.socketio');
 
