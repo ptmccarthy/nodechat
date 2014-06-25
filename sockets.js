@@ -9,7 +9,7 @@ var passportio = require('passport.socketio');
 var db = monk(config.mongoURL);
 var chats = db.get('history');
 var items = db.get('items');
-var sessions = db.get('sessions');
+var sessions;
 
 var io;
 var rooms = {}; // { room_name: client_count }
@@ -19,6 +19,7 @@ var userToSocketId = {};
 
 module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
+  sessions = sessionStore;
   io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
     cookieParser : cookieParser,
@@ -37,7 +38,7 @@ module.exports.closeSocketForUser = function(user) {
 }
 
 var onConnect = function (socket) {
-  socket.on('subscribe', function(data) { onSubscribe(socket, data); });
+  socket.on('subscribe', function(data) { onSubscribe(socket, data.room); });
   socket.on('unsubscribe', function(data) { onUnsubscribe(socket, data.room); });
   socket.on('disconnect', function() { onDisconnect(socket) });
 
@@ -58,9 +59,8 @@ var onDisconnect = function(socket) {
   delete userToSocketId[user.username];
 }
 
-var onSubscribe = function(socket, data) {
+var onSubscribe = function(socket, room) {
   var user = getUserFromSocket(socket);
-  var room = data.room;
   socket.join(room);
   if (rooms[room] == undefined) {
     rooms[room] = 1;
@@ -88,7 +88,7 @@ var onSubscribe = function(socket, data) {
     addToBuddyList(user);
   }
   if (room == 'inventory') {
-    sendInventory(socket, data.character);
+    sendInventory(socket);
   }
 }
 
@@ -180,11 +180,12 @@ var authFailure = function(data, message, error, accept) {
 
 // hacking in inventory stuff, this shit will need to be refactored
 
-var sendInventory = function(socket, character) {
-  items.find({ owned_by: character }, function (err, doc) {
-    logger.info(JSON.stringify(doc));
-    io.to(socket.id).emit('update-inventory', { inventory: doc });
-  });
+var sendInventory = function(socket) {
+  sessions.get(socket.client.request.sessionID, function (err, session) {
 
+    items.find({ owned_by: session.character }, function (err, doc) {
+      io.to(socket.id).emit('update-inventory', { inventory: doc });
+    });
+  });
 }
 
