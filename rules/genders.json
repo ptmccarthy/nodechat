@@ -1,0 +1,13 @@
+{
+  "male": {
+    "name": "Male"
+  },
+
+  "female": {
+    "name": "Female"
+  },
+
+  "furry": {
+    "name": "Furry Kin"
+  }
+}

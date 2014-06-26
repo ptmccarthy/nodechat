@@ -1,0 +1,37 @@
+{
+  "LG": {
+    "name": "Lawful Good"
+  },
+  
+  "NG": {
+    "name": "Neutral Good"
+  },
+
+  "CG": {
+    "name": "Chaotic Good"
+  },
+
+  "LN": {
+    "name": "Lawful Neutral"
+  },
+
+  "TN": {
+    "name": "True Neutral"
+  },
+
+  "CN": {
+    "name": "Chaotic Neutral"
+  },
+
+  "LE": {
+    "name": "Lawful Evil"
+  },
+
+  "NE": {
+    "name": "Neutral Evil"
+  },
+
+  "CE": {
+    "name": "Chaotic Evil"
+  }
+}

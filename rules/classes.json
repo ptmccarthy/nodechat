@@ -1,0 +1,26 @@
+{
+  "bard": {
+    "name": "Bard"
+  },
+
+  "cleric": {
+    "name": "Cleric"
+  },
+
+  "necromancer": {
+    "name": "Necromancer"
+  },
+
+  "rogue": {
+    "name": "Rogue"
+  },
+
+  "warrior": {
+    "name": "Warrior"
+  },
+
+  "wizard": {
+    "name": "Wizard"
+  }
+
+}
