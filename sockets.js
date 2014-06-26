@@ -9,12 +9,13 @@ var passportio = require('passport.socketio');
 var db = monk(config.mongoURL);
 var chats = db.get('history');
 var items = db.get('items');
+var User = require('./models/users');
+
 var sessions;
 
 var io;
 var rooms = {}; // { room_name: client_count }
 var buddyList = [];
-var userToSocketId = {};
 
 
 module.exports.init = function(sio, passport, sessionStore) {
@@ -32,8 +33,7 @@ module.exports.init = function(sio, passport, sessionStore) {
 }
 
 module.exports.closeSocketForUser = function(user) {
-  var socketId = userToSocketId[user.username];
-  var socket = io.sockets.connected[socketId];
+  var socket = io.sockets.adapter.rooms[user._id][0];
   socket.disconnect();
 }
 
@@ -46,14 +46,26 @@ module.exports.updateInventoryForUser = function(user) {
 }
 
 var onConnect = function (socket) {
+  var user = getUserFromSocket(socket);
+
   socket.on('subscribe', function(data) { onSubscribe(socket, data.room); });
   socket.on('unsubscribe', function(data) { onUnsubscribe(socket, data.room); });
   socket.on('disconnect', function() { onDisconnect(socket) });
 
-  socket.on('chat-send', function(data) { onChatReceived(data); });
+  socket.on('chat-send', function(data) { onChatReceived(socket, data); });
 
-  var user = getUserFromSocket(socket);
-  userToSocketId[user.username] = socket.id;
+  // auto-join some useful rooms
+  socket.join(user._id);
+  sessions.get(socket.client.request.sessionID, function(err, session) {
+    socket.join(session.character);
+  });
+
+  if (user.getPermissionLevel() == 0)
+    socket.join('admins');
+  if (user.getPermissionLevel() == 1)
+    socket.join('superusers');
+  if (user.getPermissionLevel() == 2)
+    socket.join('players');
 }
 
 var onDisconnect = function(socket) {
@@ -62,9 +74,6 @@ var onDisconnect = function(socket) {
   for (var i in roomNames) {
     onUnsubscribe(socket, roomNames[i]);
   }
-
-  var user = getUserFromSocket(socket);
-  delete userToSocketId[user.username];
 }
 
 var onSubscribe = function(socket, room) {
@@ -118,9 +127,11 @@ var onUnsubscribe = function(socket, room) {
   }
 }
 
-var onChatReceived = function(data) {
+var onChatReceived = function(socket, data) {
   var targetSockets = [];
   var room = 'chat';
+  var user = getUserFromSocket(socket);
+  data.username = user.username;
   if (data.recipients == undefined) {
     logger.debug("Initializing chat-send listener: recipients is undefined");
     data.recipients = 'all';
@@ -132,14 +143,16 @@ var onChatReceived = function(data) {
   if (data.recipients == 'all') {
     io.to(room).emit('message', data);
   } else {
-    for (var i = 0; i < data.recipients.length; i++) {
-      var socketId = userToSocketId[data.recipients[i]];
-      io.to(socketId).emit('message', data);
-    }
-    var socketId = userToSocketId[data.username];
-    io.to(socketId).emit('message', data);
+    User.find({ _id: { $in: data.recipients } }, function(err, doc) {
+      data.recipients = [];
+      for (var i = 0; i < doc.length; i++) {
+        data.recipients.push(doc[i].username);
+        io.to(doc[i]._id).emit('message', data);
+      }
+      io.to(user._id).emit('message', data);
+      chats.insert(data);
+    });
   }
-  chats.insert(data);
 }
 
 var sendRecentHistory = function (socket) {
@@ -156,16 +169,19 @@ var sendRecentHistory = function (socket) {
 }
 
 var addToBuddyList = function(user) {
-  buddyList.push(user.username);
+  buddyList.push(user);
   io.to('chat').emit('active-users', { users: buddyList });
 }
 
 var removeFromBuddyList = function(user) {
-  var index = buddyList.indexOf(user.username);
-  if (index > -1) {
-    buddyList.splice(index, 1);
-    io.to('chat').emit('active-users', { users: buddyList });
+  var index = null;
+  for (var i = 0; i < buddyList.length; i++) {
+    if (buddyList[i]._id == user._id) {
+      buddyList.splice(index, 1);
+      i--;
+    }
   }
+  io.to('chat').emit('active-users', { users: buddyList });
 }
 
 var getUserFromSocket = function(socket) {
