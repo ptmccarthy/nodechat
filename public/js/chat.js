@@ -41,10 +41,9 @@ var updateBuddyList = function(data) {
   }
   var html = '';
   for (var i = 0; i < users.length; i++) {
-    var spanId = '#user-' + users[i];
-    html += '<span class="buddyItems" id="' + spanId + '">';
+    html += '<span class="buddyItems" id="' + users[i]._id + '">';
     html += '<input type="checkbox">';
-    html += users[i];
+    html += users[i].username;
     html += '</span>';
   }
   buddyList.html(html);
@@ -101,7 +100,7 @@ $(document).ready(function () {
     var text = chatfield.val();
     var recipients = [];
     buddyList.children().each(function(index, element) {
-      var recip = $(element).text();
+      var recip = $(element).prop('id');
       if ( $(element).find("input").is(':checked') ) {
         recipients.push(recip);
       }
@@ -109,7 +108,6 @@ $(document).ready(function () {
 
     var response = {
       message: text,
-      username: username,
       recipients: recipients,
       timestamp: moment(),
       room: 'chat'
