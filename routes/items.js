@@ -2,6 +2,8 @@ var Item = require('../models/items');
 var Character = require('../models/character');
 var User = require('../models/users');
 
+var sockets = require('../sockets');
+
 module.exports.items = function(req, res) {
   Item.find({}, function(err, doc) {
     if (err) throw err;
@@ -31,6 +33,10 @@ module.exports.createItem = function(req, res) {
   if (req.body.character != undefined) {
     Character.findOne({_id: req.body.character}, function(err, character) {
       generateItem(req, res, character);
+      User.findOne({characters: {_id: character._id}}, function(err, user) {
+        if (user)
+          sockets.updateInventoryForUser(user);
+      });
     });
   } else {
     generateItem(req, res, null);

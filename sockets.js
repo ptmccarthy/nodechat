@@ -37,6 +37,14 @@ module.exports.closeSocketForUser = function(user) {
   socket.disconnect();
 }
 
+module.exports.updateInventoryForUser = function(user) {
+  var socketId = userToSocketId[user.username];
+  if (socketId) {
+    var socket = io.sockets.connected[socketId];
+    sendInventory(socket);
+  }
+}
+
 var onConnect = function (socket) {
   socket.on('subscribe', function(data) { onSubscribe(socket, data.room); });
   socket.on('unsubscribe', function(data) { onUnsubscribe(socket, data.room); });
@@ -184,8 +192,7 @@ var sendInventory = function(socket) {
   sessions.get(socket.client.request.sessionID, function (err, session) {
 
     items.find({ owned_by: session.character }, function (err, doc) {
-      io.to(socket.id).emit('update-inventory', { inventory: doc });
+      socket.emit('update-inventory', { inventory: doc });
     });
   });
 }
-
