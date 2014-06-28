@@ -16,6 +16,7 @@ var userSchema = Schema({
   permissions:  Number,
 
   characters:   [{ type: Schema.Types.ObjectId, ref: 'Character' }],
+  currentChar: {type: Schema.Types.ObjectId, ref: 'Character' },
   data:         Schema.Types.Mixed
 });
 

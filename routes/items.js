@@ -12,7 +12,7 @@ module.exports.items = function(req, res) {
 }
 
 module.exports.myItems = function(req, res) {
-  Item.find({ owned_by: req.session.character }, function (err, doc) {
+  Item.find({ owned_by: req.user.currentChar }, function (err, doc) {
     res.send(doc);
   });
 }
@@ -35,7 +35,7 @@ module.exports.createItem = function(req, res) {
       generateItem(req, res, character);
       User.findOne({characters: {_id: character._id}}, function(err, user) {
         if (user)
-          sockets.updateInventoryForUser(user);
+          sockets.updateInventoryForCharacter(user.currentChar);
       });
     });
   } else {

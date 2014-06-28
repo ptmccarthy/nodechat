@@ -8,10 +8,8 @@ var passportio = require('passport.socketio');
 
 var db = monk(config.mongoURL);
 var chats = db.get('history');
-var items = db.get('items');
+var Item = require('./models/items');
 var User = require('./models/users');
-
-var sessions;
 
 var io;
 var rooms = {}; // { room_name: client_count }
@@ -20,7 +18,6 @@ var buddyList = [];
 
 module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
-  sessions = sessionStore;
   io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
     cookieParser : cookieParser,
@@ -37,12 +34,10 @@ module.exports.closeSocketForUser = function(user) {
   socket.disconnect();
 }
 
-module.exports.updateInventoryForUser = function(user) {
-  var socketId = userToSocketId[user.username];
-  if (socketId) {
-    var socket = io.sockets.connected[socketId];
-    sendInventory(socket);
-  }
+module.exports.updateInventoryForCharacter = function(charId) {
+  Item.find({ owned_by: charId }, function (err, doc) {
+    io.to(charId).emit('update-inventory', { inventory: doc });
+  });
 }
 
 var onConnect = function (socket) {
@@ -53,12 +48,11 @@ var onConnect = function (socket) {
   socket.on('disconnect', function() { onDisconnect(socket) });
 
   socket.on('chat-send', function(data) { onChatReceived(socket, data); });
+  socket.on('item-transfer', function(data) { onItemTransfer(data); });
 
   // auto-join some useful rooms
   socket.join(user._id);
-  sessions.get(socket.client.request.sessionID, function(err, session) {
-    socket.join(session.character);
-  });
+  socket.join(user.currentChar);
 
   if (user.getPermissionLevel() == 0)
     socket.join('admins');
@@ -155,6 +149,21 @@ var onChatReceived = function(socket, data) {
   }
 }
 
+var onItemTransfer = function(data) {
+  Item.find({_id: {$in: data.items} }, function(err, items) {
+    var currentOwner = items[0].owned_by;
+    var targetUser = data.recipient;
+    User.findById(targetUser, function(err, user) {
+      for (var i = 0; i < items.length; i++) {
+        items[i].giveToCharacter(user.currentChar, function(item) {
+          updateInventoryForCharacter(currentOwner);
+          updateInventoryForCharacter(user.currentChar);
+        });
+      }
+    });
+  });
+}
+
 var sendRecentHistory = function (socket) {
   var user = getUserFromSocket(socket);
   chats.find(
@@ -205,10 +214,6 @@ var authFailure = function(data, message, error, accept) {
 // hacking in inventory stuff, this shit will need to be refactored
 
 var sendInventory = function(socket) {
-  sessions.get(socket.client.request.sessionID, function (err, session) {
-
-    items.find({ owned_by: session.character }, function (err, doc) {
-      socket.emit('update-inventory', { inventory: doc });
-    });
-  });
+  var user = getUserFromSocket(socket);
+  updateInventoryForCharacter(user.currentChar);
 }
