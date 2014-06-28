@@ -12,6 +12,8 @@ var Item = require('./models/items');
 var User = require('./models/users');
 var Character = require('./models/character');
 
+var sessions;
+
 var io;
 var rooms = {}; // { room_name: client_count }
 var buddyList = [];
@@ -19,6 +21,7 @@ var buddyList = [];
 
 module.exports.init = function(sio, passport, sessionStore) {
   io = sio;
+  sessions = sessionStore;
   io.sockets.on('connection', onConnect);
   io.set('authorization', passportio.authorize({
     cookieParser : cookieParser,
@@ -54,7 +57,9 @@ var onConnect = function (socket) {
 
   // auto-join some useful rooms
   socket.join(user._id);
-  socket.join(user.currentChar);
+  sessions.get(socket.client.request.sessionID, function(err, session) {
+    socket.join(session.character);
+  });
 
   if (user.getPermissionLevel() == 0)
     socket.join('admins');
@@ -174,7 +179,8 @@ var sendRecentHistory = function (socket) {
       for (var i = 1; i <= doc.length; i++) {
         socket.emit('message', doc[doc.length-i]);
       }
-    });
+    }
+  );
 }
 
 var addToBuddyList = function(user) {
@@ -215,10 +221,10 @@ var authFailure = function(data, message, error, accept) {
 }
 
 
-
 // hacking in inventory stuff, this shit will need to be refactored
 
 var sendInventory = function(socket) {
-  var user = getUserFromSocket(socket);
-  updateInventoryForCharacter(user.currentChar);
+  sessions.get(socket.client.request.sessionID, function (err, session) {
+    updateInventoryForCharacter(session.character);
+  });
 }

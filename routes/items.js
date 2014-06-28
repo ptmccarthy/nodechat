@@ -12,7 +12,7 @@ module.exports.items = function(req, res) {
 }
 
 module.exports.myItems = function(req, res) {
-  Item.find({ owned_by: req.user.currentChar }, function (err, doc) {
+  Item.find({ owned_by: req.session.character }, function (err, doc) {
     res.send(doc);
   });
 }

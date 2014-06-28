@@ -30,8 +30,7 @@ module.exports.deleteUser = function(req, res) {
 
 module.exports.selectChar = function(req, res) {
   logger.info('User ' + req.user.username + ' selected character id: ' + req.body.char_selection);
-  req.user.currentChar = req.body.char_selection;
-  req.user.save();
+  req.session.character = req.body.char_selection;
   res.redirect('/');
 }
 
@@ -44,7 +43,7 @@ module.exports.getChars = function(req, res) {
   .exec(function(err, user) {
     var chars = user.characters;
     for (var i = 0; i < chars.length; i++) {
-      if (chars[i]._id == req.user.currentChar) {
+      if (chars[i]._id == req. session.character) {
         selected_char = chars[i];
       }
     }
