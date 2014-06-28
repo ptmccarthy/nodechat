@@ -158,13 +158,15 @@ var onChatReceived = function(socket, data) {
 
 var onItemTransfer = function(data) {
   Item.find({_id: {$in: data.items} }, function(err, items) {
-    var currentOwner = items[0].owned_by;
-    var targetChar = data.recipient;
-    for (var i = 0; i < items.length; i++) {
-      items[i].giveToCharacter(data.recipient, function(item) {
-        updateInventoryForCharacter(currentOwner);
-        updateInventoryForCharacter(targetChar);
-      });
+    if (items.length > 0) {
+      var currentOwner = items[0].owned_by;
+      var targetChar = data.recipient;
+      for (var i = 0; i < items.length; i++) {
+        items[i].giveToCharacter(data.recipient, function(item) {
+          updateInventoryForCharacter(currentOwner);
+          updateInventoryForCharacter(targetChar);
+        });
+      }
     }
   });
 }
