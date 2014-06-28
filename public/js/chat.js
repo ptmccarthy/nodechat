@@ -44,7 +44,7 @@ var updateBuddyList = function(data) {
   for (var i = 0; i < users.length; i++) {
     html += '<span class="buddyItems" id="' + users[i]._id + '">';
     html += '<input type="checkbox">';
-    html += users[i].username;
+    html += users[i].currentChar.name + ' (' + users[i].username + ')';
     html += '</span>';
   }
   buddyList.html(html);
@@ -122,6 +122,7 @@ $(document).ready(function () {
 
   giveItemButton.click(function() {
     var items = [];
+    var recipientUser = null;
     var recipient = null;
     var err = null;
 
@@ -132,11 +133,16 @@ $(document).ready(function () {
     });
     buddyList.children().each(function(index, element) {
       if ( $(element).find("input").is(':checked') ) {
-        if (recipient) {
+        if (recipientUser) {
           // we already have a recipient!
           err = true;
         }
-        recipient = $(element).prop('id');
+        recipientUser = $(element).prop('id');
+        for (var i = 0; i < users.length; i++) {
+          if (users[i]._id == recipientUser) {
+            recipient = users[i].currentChar._id;
+          }
+        }
       }
     });
 

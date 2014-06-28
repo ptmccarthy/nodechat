@@ -10,6 +10,7 @@ var db = monk(config.mongoURL);
 var chats = db.get('history');
 var Item = require('./models/items');
 var User = require('./models/users');
+var Character = require('./models/character');
 
 var io;
 var rooms = {}; // { room_name: client_count }
@@ -34,7 +35,8 @@ module.exports.closeSocketForUser = function(user) {
   socket.disconnect();
 }
 
-module.exports.updateInventoryForCharacter = function(charId) {
+module.exports.updateInventoryForCharacter = updateInventoryForCharacter;
+var updateInventoryForCharacter = function(charId) {
   Item.find({ owned_by: charId }, function (err, doc) {
     io.to(charId).emit('update-inventory', { inventory: doc });
   });
@@ -152,15 +154,13 @@ var onChatReceived = function(socket, data) {
 var onItemTransfer = function(data) {
   Item.find({_id: {$in: data.items} }, function(err, items) {
     var currentOwner = items[0].owned_by;
-    var targetUser = data.recipient;
-    User.findById(targetUser, function(err, user) {
-      for (var i = 0; i < items.length; i++) {
-        items[i].giveToCharacter(user.currentChar, function(item) {
-          updateInventoryForCharacter(currentOwner);
-          updateInventoryForCharacter(user.currentChar);
-        });
-      }
-    });
+    var targetChar = data.recipient;
+    for (var i = 0; i < items.length; i++) {
+      items[i].giveToCharacter(data.recipient, function(item) {
+        updateInventoryForCharacter(currentOwner);
+        updateInventoryForCharacter(targetChar);
+      });
+    }
   });
 }
 
@@ -178,8 +178,13 @@ var sendRecentHistory = function (socket) {
 }
 
 var addToBuddyList = function(user) {
-  buddyList.push(user);
-  io.to('chat').emit('active-users', { users: buddyList });
+  Character.populate(user, { path: 'currentChar', model: 'Character' }, function(err, user) {
+    if (err) throw err;
+    if (user) {
+      buddyList.push(user);
+    }
+    io.to('chat').emit('active-users', { users: buddyList });
+  });
 }
 
 var removeFromBuddyList = function(user) {
