@@ -62,10 +62,10 @@ module.exports.renderCreateChar = function(req, res) {
   .populate('characters')
   .exec(function(err, user) {
     res.render('gen_char', {  'user_with_chars': user,
-                              'races': rules.characters().races,
-                              'classes': rules.characters().classes,
-                              'alignments': rules.characters().alignments,
-                              'genders': rules.characters().genders });
+                              'races': rules.characters.races,
+                              'classes': rules.characters.classes,
+                              'alignments': rules.characters.alignments,
+                              'genders': rules.characters.genders });
   });
 }
 

@@ -1,5 +1,8 @@
-var character_rules = require('./characters.json');
+var logger = require('../logger');
 
-module.exports.characters = function() {
-  return character_rules;
-}
+var rules = {}
+
+// import rulesets
+rules.characters = require('./characters.json');
+
+module.exports = rules;

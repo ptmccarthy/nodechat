@@ -4,8 +4,8 @@ block content
     .controls
       div.char_name #{character.name}
       div.char_attrs
-        | #{character.race} #{character.class}
+        | #{character.race.name} #{character.class.name}
         br
-        | #{character.alignment}
+        | #{character.alignment.name}
         br
         | Gold: #{character.gold}
