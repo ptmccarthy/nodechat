@@ -103,7 +103,7 @@ var onSubscribe = function(socket, room) {
       recipients: 'all'
     });
 
-    addToBuddyList(user);
+    addToBuddyList(socket);
   }
   if (room == 'inventory') {
     sendInventory(socket);
@@ -185,13 +185,18 @@ var sendRecentHistory = function (socket) {
   );
 }
 
-var addToBuddyList = function(user) {
-  Character.populate(user, { path: 'currentChar', model: 'Character' }, function(err, user) {
-    if (err) throw err;
-    if (user) {
-      buddyList.push(user);
-    }
-    io.to('chat').emit('active-users', { users: buddyList });
+var addToBuddyList = function(socket) {
+  var user = getUserFromSocket(socket);
+  getSessionFromSocket(socket, function(session) {
+    Character.findById(session.character, function(err, character) {
+      if (err) throw err;
+      if (character) {
+        user = user.toObject();
+        user.currentChar = character;
+        buddyList.push(user);
+      }
+      io.to('chat').emit('active-users', { users: buddyList });
+    });
   });
 }
 
@@ -226,7 +231,14 @@ var authFailure = function(data, message, error, accept) {
 // hacking in inventory stuff, this shit will need to be refactored
 
 var sendInventory = function(socket) {
-  sessions.get(socket.client.request.sessionID, function (err, session) {
+  getSessionFromSocket(socket, function(session) {
     updateInventoryForCharacter(session.character);
+  });
+}
+
+var getSessionFromSocket = function(socket, callback) {
+  sessions.get(socket.client.request.sessionID, function(err, session) {
+    if (err) throw err;
+    callback(session);
   });
 }

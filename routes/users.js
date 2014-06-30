@@ -43,7 +43,7 @@ module.exports.getChars = function(req, res) {
   .exec(function(err, user) {
     var chars = user.characters;
     for (var i = 0; i < chars.length; i++) {
-      if (chars[i]._id == req. session.character) {
+      if (chars[i]._id == req.session.character) {
         selected_char = chars[i];
       }
     }
