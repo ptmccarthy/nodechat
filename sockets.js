@@ -38,12 +38,12 @@ module.exports.closeSocketForUser = function(user) {
   socket.disconnect();
 }
 
-module.exports.updateInventoryForCharacter = updateInventoryForCharacter;
 var updateInventoryForCharacter = function(charId) {
   Item.find({ owned_by: charId }, function (err, doc) {
     io.to(charId).emit('update-inventory', { inventory: doc });
   });
 }
+module.exports.updateInventoryForCharacter = updateInventoryForCharacter;
 
 var onConnect = function (socket) {
   var user = getUserFromSocket(socket);
