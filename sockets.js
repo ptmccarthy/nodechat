@@ -92,7 +92,7 @@ var onSubscribe = function(socket, room) {
     socket.emit('message', {
       message: 'Connected to chat. Displaying ' + config.displayRecent + ' most recent messages...',
       timestap: moment(),
-      recipients: []
+      recipients: [user.username]
     });
     sendRecentHistory(socket);
 
