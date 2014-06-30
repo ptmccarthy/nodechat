@@ -3,6 +3,7 @@ var users = [];
 var socket;
 var chatfield;
 var sendButton;
+var giveItemButton;
 var chatbox;
 var buddyList;
 var inventory;
@@ -43,7 +44,7 @@ var updateBuddyList = function(data) {
   for (var i = 0; i < users.length; i++) {
     html += '<span class="buddyItems" id="' + users[i]._id + '">';
     html += '<input type="checkbox">';
-    html += users[i].username;
+    html += users[i].currentChar.name + ' (' + users[i].username + ')';
     html += '</span>';
   }
   buddyList.html(html);
@@ -56,7 +57,8 @@ var updateInventory = function(data) {
   }
   var html = '';
   for (var i = 0; i < inv.length; i++) {
-    html += '<span class="inv_item">';
+    html += '<span class="inv_item" id="' + inv[i]._id + '">';
+    html += '<input type="checkbox">';
     html += inv[i].name + ' -- ' + inv[i].description;
     html += '</span><br>';
   }
@@ -70,6 +72,7 @@ $(document).ready(function () {
 
   chatfield = $('#chatfield').select();
   sendButton = $('#sendbtn').select();
+  giveItemButton = $('#give_item_btn').select();
   chatbox = $('#chatbox').select();
   buddyList = $('#buddylist').select();
   inventory = $('#inventory').select();
@@ -116,6 +119,42 @@ $(document).ready(function () {
     socket.emit('chat-send', response);
     chatfield.val('');
   });
+
+  giveItemButton.click(function() {
+    var items = [];
+    var recipientUser = null;
+    var recipient = null;
+    var err = null;
+
+    inventory.children().each(function(index, element) {
+      if ( $(element).find("input").is(':checked') ) {
+        items.push($(element).prop('id'));
+      }
+    });
+    buddyList.children().each(function(index, element) {
+      if ( $(element).find("input").is(':checked') ) {
+        if (recipientUser) {
+          // we already have a recipient!
+          err = true;
+        }
+        recipientUser = $(element).prop('id');
+        for (var i = 0; i < users.length; i++) {
+          if (users[i]._id == recipientUser) {
+            recipient = users[i].currentChar._id;
+          }
+        }
+      }
+    });
+
+    if (!err) {
+      var response = {
+        items: items,
+        recipient: recipient
+      };
+      socket.emit('item-transfer', response);
+    }
+  });
+
 
   chatfield.keyup(function (e) {
     if (e.keyCode === 13) {

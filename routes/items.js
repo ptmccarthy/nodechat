@@ -35,7 +35,7 @@ module.exports.createItem = function(req, res) {
       generateItem(req, res, character);
       User.findOne({characters: {_id: character._id}}, function(err, user) {
         if (user)
-          sockets.updateInventoryForUser(user);
+          sockets.updateInventoryForCharacter(user.currentChar);
       });
     });
   } else {
