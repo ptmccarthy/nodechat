@@ -48,7 +48,7 @@ var isLoggedIn = function(req, res, next) {
 }
 
 var hasActiveCharacter = function(req, res, next) {
-  if (req.session.character) {
+  if (req.user.currentChar) {
     next();
   } else {
     res.redirect('users/me');

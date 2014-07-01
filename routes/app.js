@@ -4,7 +4,7 @@ var Character = require('../models/character');
 
 module.exports.index = function(req, res) {
   var username = req.user.username;
-  Character.findOne({_id: req.session.character}, function(err, character) {
+  Character.findOne({_id: req.user.currentChar}, function(err, character) {
     res.render('index', { 'user': username,
                           'character': character });
   });
@@ -12,7 +12,6 @@ module.exports.index = function(req, res) {
 
 module.exports.logout = function(req, res) {
   req.logout();
-  req.session.character = null;
   res.redirect('/login');
 }
 
