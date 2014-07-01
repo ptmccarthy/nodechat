@@ -14,13 +14,14 @@ var itemSchema = mongoose.Schema({
 });
 
 // static factory method
-itemSchema.statics.generateFromTemplate = function(template) {
+itemSchema.statics.generateFromTemplate = function(template, callback) {
   var newItem = new this();
   newItem.name = template.name;
   newItem.description = template.description;
   newItem.template = false;
-  newItem.save();
-  return newItem;
+  newItem.save(function(err, item) {
+    callback(item);
+  });
 }
 
 itemSchema.methods.giveToCharacter = function(charId, callback) {

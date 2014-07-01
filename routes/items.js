@@ -30,11 +30,11 @@ module.exports.renderCreateItem = function(req, res) {
 }
 
 module.exports.createItem = function(req, res) {
-  if (req.body.character != undefined) {
-    req.user.populate('currentChar', function(err, user) {
-      generateItem(req, res, user.currentChar);
-      if (user.currentChar)
-        sockets.updateInventoryForCharacter(user.currentChar._id);
+  if (req.body.character) {
+    Character.findById(req.body.character, function(err, character) {
+      if (character) {
+        generateItem(req, res, character);
+      }
     });
   } else {
     generateItem(req, res, null);
@@ -45,12 +45,17 @@ var generateItem = function(req, res, character) {
   if (req.body.item_type == 'clone') {
     Item.findOne({_id: req.body.template}, function(err, item) {
       if (err) throw err;
-      var item = Item.generateFromTemplate(item);
-      if (character) {
-        item.owned_by = character._id;
-        character.inventory.push(item._id);
-        character.save();
-      }
+      var item = Item.generateFromTemplate(item, function(item) {
+        if (character) {
+          item.owned_by = character._id;
+          character.inventory.push(item._id);
+          item.save(function(err, item) {
+            character.save(function(err, character) {
+              sockets.updateInventoryForCharacter(character._id);
+            });
+          });
+        }
+      });
     });
     res.redirect('/items');
   } else if (req.body.item_type == 'template' || req.body.item_type == 'unique') {
@@ -58,7 +63,6 @@ var generateItem = function(req, res, character) {
     item.name = req.body.name;
     item.description = req.body.description;
     item.template = (req.body.item_type == 'template');
-    item.save();
     if (req.body.item_type == 'unique') {
       if (character) {
         item.owned_by = character._id;
@@ -66,6 +70,9 @@ var generateItem = function(req, res, character) {
         character.save();
       }
     }
+    item.save(function(err, item) {
+      sockets.updateInventoryForCharacter(character._id);
+    });
     res.redirect('/items');
   } else {
     res.redirect('/items/new');
