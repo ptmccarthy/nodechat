@@ -2,6 +2,7 @@ var sockets = require('../sockets');
 var logger = require('../logger');
 
 var User = require('../models/users');
+var Character = require('../models/character');
 
 module.exports.users = function(req, res) {
   User.find({}, function(err, doc) {
@@ -30,23 +31,15 @@ module.exports.deleteUser = function(req, res) {
 
 module.exports.selectChar = function(req, res) {
   logger.info('User ' + req.user.username + ' selected character id: ' + req.body.char_selection);
-  req.session.character = req.body.char_selection;
+  req.user.currentChar = req.body.char_selection;
+  req.user.save();
   res.redirect('/');
 }
 
 module.exports.getChars = function(req, res) {
   var selected_char;
-
-  User
-  .findOne({_id: req.user._id})
-  .populate( 'characters')
-  .exec(function(err, user) {
-    var chars = user.characters;
-    for (var i = 0; i < chars.length; i++) {
-      if (chars[i]._id == req.session.character) {
-        selected_char = chars[i];
-      }
-    }
+  req.user.populate('characters currentChar', function(err, user) {
+    selected_char = user.currentChar;
     if (!selected_char) {
       selected_char = { name: '[None]' };
     }

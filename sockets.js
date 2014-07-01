@@ -12,8 +12,6 @@ var Item = require('./models/items');
 var User = require('./models/users');
 var Character = require('./models/character');
 
-var sessions;
-
 var io;
 var rooms = {}; // { room_name: client_count }
 var buddyList = [];
@@ -57,9 +55,7 @@ var onConnect = function (socket) {
 
   // auto-join some useful rooms
   socket.join(user._id);
-  sessions.get(socket.client.request.sessionID, function(err, session) {
-    socket.join(session.character);
-  });
+  socket.join(user.currentChar);
 
   if (user.getPermissionLevel() == 0)
     socket.join('admins');
@@ -187,16 +183,12 @@ var sendRecentHistory = function (socket) {
 
 var addToBuddyList = function(socket) {
   var user = getUserFromSocket(socket);
-  getSessionFromSocket(socket, function(session) {
-    Character.findById(session.character, function(err, character) {
-      if (err) throw err;
-      if (character) {
-        user = user.toObject();
-        user.currentChar = character;
-        buddyList.push(user);
-      }
-      io.to('chat').emit('active-users', { users: buddyList });
-    });
+  user.populate('currentChar', function(err, fullUser) {
+    if (err) throw err;
+    if (fullUser) {
+      buddyList.push(user);
+    }
+    io.to('chat').emit('active-users', { users: buddyList });
   });
 }
 
@@ -229,16 +221,8 @@ var authFailure = function(data, message, error, accept) {
 
 
 // hacking in inventory stuff, this shit will need to be refactored
-
 var sendInventory = function(socket) {
-  getSessionFromSocket(socket, function(session) {
-    updateInventoryForCharacter(session.character);
-  });
+  var user = getUserFromSocket(socket);
+  updateInventoryForCharacter(user.currentChar);
 }
 
-var getSessionFromSocket = function(socket, callback) {
-  sessions.get(socket.client.request.sessionID, function(err, session) {
-    if (err) throw err;
-    callback(session);
-  });
-}

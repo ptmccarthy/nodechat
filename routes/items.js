@@ -12,7 +12,7 @@ module.exports.items = function(req, res) {
 }
 
 module.exports.myItems = function(req, res) {
-  Item.find({ owned_by: req.session.character }, function (err, doc) {
+  Item.find({ owned_by: req.user.currentChar }, function (err, doc) {
     res.send(doc);
   });
 }
@@ -31,12 +31,10 @@ module.exports.renderCreateItem = function(req, res) {
 
 module.exports.createItem = function(req, res) {
   if (req.body.character != undefined) {
-    Character.findOne({_id: req.body.character}, function(err, character) {
-      generateItem(req, res, character);
-      User.findOne({characters: {_id: character._id}}, function(err, user) {
-        if (user)
-          sockets.updateInventoryForCharacter(req.session.character);
-      });
+    req.user.populate('currentChar', function(err, user) {
+      generateItem(req, res, user.currentChar);
+      if (user.currentChar)
+        sockets.updateInventoryForCharacter(user.currentChar._id);
     });
   } else {
     generateItem(req, res, null);
