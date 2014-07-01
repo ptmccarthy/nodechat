@@ -6,33 +6,34 @@ block extraHeader
 
 block content
   .module
-    #char_list
-      | Characters owned by you:
-      br
-      - var user = user_with_chars
-      - var chars = user.characters
-        each item in chars
-          li= item
-      br
+    .module_title Create New Character
     form.generate_char(action='/chars', method='post')
-      .login_text Create New Character
       .char_input_label Name:
       input.char_input(name='char_name', type='text')
-      br
-      .char_input_label Gender:
-      input.char_input(name='char_gender', type='text')
       br
       .char_input_label Age:
       input.char_input(name='char_age', type='number')
       br
+      .char_input_label Gender:
+      select.char_input(name='char_gender')
+        each gender, key in genders
+          option(value="#{key}") #{gender.name}
+      br
       .char_input_label Race:
-      input.char_input(name='char_race', type='text')
+      select.char_input(name='char_race')
+        each race, key in races
+          option(value="#{key}") #{race.name}
       br
       .char_input_label Class:
-      input.char_input(name='char_class', type='text')
+      select.char_input(name='char_class')
+        each char_class, key in classes
+          option(value="#{key}") #{char_class.name}
       br
       .char_input_label Alignment:
-      input.char_input(name='char_alignment', type='text')
+      select.char_input(name='char_alignment')
+        each alignment, key in alignments
+          option(value="#{key}") #{alignment.name}      
+      br
       br
       input#generatebtn(type='submit', value='Create')
 

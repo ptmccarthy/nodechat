@@ -1,0 +1,104 @@
+{
+  "races": {
+    "human": { 
+      "name": "Human"
+    },
+    
+    "dwarf": {
+      "name": "Dwarf"
+    },
+
+    "gnome": {
+      "name": "Gnome"
+    },
+
+    "halfing": {
+      "name": "Halfing"
+    },
+
+    "elf": {
+     "name": "Elf"
+    },
+    "darkelf": {
+      "name": "Dark Elf"
+    }
+  },
+
+  "genders": {
+    "male": {
+      "name": "Male"
+    },
+
+    "female": {
+      "name": "Female"
+    },
+
+    "furry": {
+      "name": "Furry Kin"
+    }
+  },
+
+  "classes": {
+    "bard": {
+      "name": "Bard"
+    },
+
+    "cleric": {
+      "name": "Cleric"
+    },
+
+    "necromancer": {
+      "name": "Necromancer"
+    },
+
+    "rogue": {
+      "name": "Rogue"
+    },
+
+    "warrior": {
+      "name": "Warrior"
+    },
+
+    "wizard": {
+      "name": "Wizard"
+    }
+  },
+
+  "alignments": {
+    "LG": {
+      "name": "Lawful Good"
+    },
+    
+    "NG": {
+      "name": "Neutral Good"
+    },
+
+    "CG": {
+      "name": "Chaotic Good"
+    },
+
+    "LN": {
+      "name": "Lawful Neutral"
+    },
+
+    "TN": {
+      "name": "True Neutral"
+    },
+
+    "CN": {
+      "name": "Chaotic Neutral"
+    },
+
+    "LE": {
+      "name": "Lawful Evil"
+    },
+
+    "NE": {
+      "name": "Neutral Evil"
+    },
+
+    "CE": {
+      "name": "Chaotic Evil"
+    }
+  }
+}

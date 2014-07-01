@@ -2,6 +2,8 @@ var Character = require('../models/character');
 var User = require('../models/users');
 var logger = require('../logger');
 
+var rules = require('../rules/rules');
+
 module.exports.createChar = function(req, res) {
   var character = new Character();
   character.create(req.body);
@@ -59,7 +61,11 @@ module.exports.renderCreateChar = function(req, res) {
   .findOne({_id: req.user._id})
   .populate('characters')
   .exec(function(err, user) {
-    res.render('gen_char', { 'user_with_chars': user });
+    res.render('gen_char', {  'user_with_chars': user,
+                              'races': rules.characters.races,
+                              'classes': rules.characters.classes,
+                              'alignments': rules.characters.alignments,
+                              'genders': rules.characters.genders });
   });
 }
 
