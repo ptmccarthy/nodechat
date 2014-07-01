@@ -17,7 +17,7 @@ var rooms = {}; // { room_name: client_count }
 var buddyList = [];
 
 
-module.exports.init = function(sio, passport, sessionStore) {
+var init = function(sio, passport, sessionStore) {
   io = sio;
   sessions = sessionStore;
   io.sockets.on('connection', onConnect);
@@ -31,8 +31,8 @@ module.exports.init = function(sio, passport, sessionStore) {
   }));
 }
 
-module.exports.closeSocketForUser = function(user) {
-  var socket = io.sockets.adapter.rooms[user._id][0];
+var closeSocketForUser = function(user) {
+  var socket = io.sockets.adapter.rooms[user._id][0]; // currently only one socket per user. Works for now, fix this later
   socket.disconnect();
 }
 
@@ -41,7 +41,6 @@ var updateInventoryForCharacter = function(charId) {
     io.to(charId).emit('update-inventory', { inventory: doc });
   });
 }
-module.exports.updateInventoryForCharacter = updateInventoryForCharacter;
 
 var onConnect = function (socket) {
   var user = getUserFromSocket(socket);
@@ -226,3 +225,8 @@ var sendInventory = function(socket) {
   updateInventoryForCharacter(user.currentChar);
 }
 
+////////////////////////////////////////////////////////
+// Public Interface
+module.exports.init = init;
+module.exports.closeSocketForUser = closeSocketForUser;
+module.exports.updateInventoryForCharacter = updateInventoryForCharacter;
