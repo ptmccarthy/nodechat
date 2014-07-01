@@ -192,10 +192,9 @@ var addToBuddyList = function(socket) {
 }
 
 var removeFromBuddyList = function(user) {
-  var index = null;
   for (var i = 0; i < buddyList.length; i++) {
     if (buddyList[i]._id == user._id) {
-      buddyList.splice(index, 1);
+      buddyList.splice(i, 1);
       i--;
     }
   }
