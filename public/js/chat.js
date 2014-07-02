@@ -70,12 +70,12 @@ $(document).ready(function () {
   socket.emit('subscribe', {room: 'chat'});
   socket.emit('subscribe', {room: 'inventory'});
 
-  chatfield = $('#chatfield').select();
-  sendButton = $('#sendbtn').select();
-  giveItemButton = $('#give_item_btn').select();
-  chatbox = $('#chatbox').select();
-  buddyList = $('#buddylist').select();
-  inventory = $('#inventory').select();
+  chatfield = $('#chatfield');
+  sendButton = $('#sendbtn');
+  giveItemButton = $('#give_item_btn');
+  chatbox = $('#chatbox');
+  buddyList = $('#buddylist');
+  inventory = $('#inventory');
 
   socket.on('message', function (data) {
     displayMessage(data);
