@@ -221,7 +221,7 @@ var authFailure = function(data, message, error, accept) {
 // hacking in inventory stuff, this shit will need to be refactored
 var sendInventory = function(socket) {
   var user = getUserFromSocket(socket);
-  updateInventoryForCharacter(user.currentChar);
+  updateInventoryForCharacter(user.currentChar.id);
 }
 
 ////////////////////////////////////////////////////////
